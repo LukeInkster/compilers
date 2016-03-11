@@ -150,6 +150,11 @@ public class UnreachableCode {
 		return ControlFlow.NEXT;
 	}
 
+	public ControlFlow check(Stmt.Do stmt) {
+		check(stmt.getBody());
+		return ControlFlow.NEXT;
+	}
+
 	/**
 	 * Soundly combine two control flow markers together.
 	 *
