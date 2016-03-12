@@ -109,6 +109,29 @@ public class WhileFile {
 		}
 	}
 
+	public final static class MacroDecl extends SyntacticElement.Impl implements Decl {
+
+		private final String name;
+		private final ArrayList<MacroParameter> parameters;
+		
+		public MacroDecl(String name, List<MacroParameter> parameters) {
+			this.name = name;
+			this.parameters = new ArrayList<MacroParameter>(parameters);
+		}
+
+		public String name() {
+			return getName();
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public List<MacroParameter> getParameters() {
+			return parameters;
+		}
+	}
+
 	public final static class MethodDecl extends SyntacticElement.Impl implements Decl {
 
 		private final String name;
@@ -176,6 +199,22 @@ public class WhileFile {
 
 		public Type getType() {
 			return type;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
+
+	public static final class MacroParameter extends SyntacticElement.Impl implements Decl {
+		private final String name;
+
+		public MacroParameter(String name) {
+			this.name = name;
+		}
+
+		public String name() {
+			return getName();
 		}
 
 		public String getName() {

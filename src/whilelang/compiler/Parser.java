@@ -59,6 +59,8 @@ public class Parser {
 				Keyword k = (Keyword) t;
 				if (t.text.equals("type")) {
 					decls.add(parseTypeDeclaration());
+				} else if (t.text.equals("macro")){
+					decls.add(parseMacroDeclaration());
 				} else {
 					decls.add(parseMethodDeclaration());
 				}
@@ -91,6 +93,42 @@ public class Parser {
 		int end = index;
 		userDefinedTypes.add(name.text);
 		return new TypeDecl(t, name.text, sourceAttr(start, end - 1));
+	}
+
+	/**
+	 * Parse a macro declaration of the following form:
+	 *
+	 * <pre>
+	 * TypeDecl ::= "macro" Ident "(" MacroParameters ")" is Expr
+	 * </pre>
+	 *
+	 * @return
+	 */
+	private Decl parseMacroDeclaration() {
+		int start = index;
+		matchKeyword("macro");
+
+		Identifier name = matchIdentifier();
+		match("(");
+
+		List<MacroParameter> params = new ArrayList<MacroParameter>();
+		boolean firstTime = true;
+		while (index < tokens.size() && !(tokens.get(index) instanceof RightBrace)) {
+			if (!firstTime) {
+				match(",");
+			}
+			firstTime = false;
+			Identifier parameterName = matchIdentifier();
+			params.add(new MacroParameter(parameterName.text));
+		}
+
+		match(")");
+		matchKeyword("is");
+
+		Type t = parseType();
+		int end = index;
+		userDefinedTypes.add(name.text);
+		return new MacroDecl(name.text, params);
 	}
 
 	/**
