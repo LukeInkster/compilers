@@ -36,12 +36,14 @@ public class Parser {
 	private String filename;
 	private ArrayList<Token> tokens;
 	private HashSet<String> userDefinedTypes;
+	private HashSet<String> userDefinedMacros;
 	private int index;
 
 	public Parser(String filename, List<Token> tokens) {
 		this.filename = filename;
 		this.tokens = new ArrayList<Token>(tokens);
 		this.userDefinedTypes = new HashSet<String>();
+		this.userDefinedMacros = new HashSet<String>();
 	}
 
 	/**
@@ -125,10 +127,10 @@ public class Parser {
 		match(")");
 		matchKeyword("is");
 
-		Type t = parseType();
+		Expr expr = parseExpr();
 		int end = index;
-		userDefinedTypes.add(name.text);
-		return new MacroDecl(name.text, params);
+		userDefinedMacros.add(name.text);
+		return new MacroDecl(name.text, params, expr, sourceAttr(start, end - 1));
 	}
 
 	/**
@@ -166,7 +168,7 @@ public class Parser {
 
 		match(")");
 		List<Stmt> stmts = parseStatementBlock();
-		return new WhileFile.MethodDecl(name.text, returnType, paramTypes, stmts, sourceAttr(start, index - 1));
+		return new MethodDecl(name.text, returnType, paramTypes, stmts, sourceAttr(start, index - 1));
 	}
 
 	/**
