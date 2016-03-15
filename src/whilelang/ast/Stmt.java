@@ -193,7 +193,7 @@ public interface Stmt extends SyntacticElement {
 	public static final class Return extends SyntacticElement.Impl implements
 			Stmt {
 
-		private final Expr expr;
+		private Expr expr;
 
 		/**
 		 * Create a given return statement with an optional return value.
@@ -234,6 +234,15 @@ public interface Stmt extends SyntacticElement {
 		 */
 		public Expr getExpr() {
 			return expr;
+		}
+
+		/**
+		 * Get the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setExpr(Expr expr) {
+			this.expr = expr;
 		}
 	}
 

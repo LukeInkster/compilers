@@ -40,12 +40,28 @@ import static whilelang.util.SyntaxError.*;
  */
 public class MacroExpander {
 	private WhileFile file;
-	private WhileFile.MethodDecl method;
 	private HashMap<String,WhileFile.MethodDecl> methods;
 	private HashMap<String,WhileFile.TypeDecl> types;
+	private HashMap<String,WhileFile.MacroDecl> macros;
 
 	public void check(WhileFile wf) {
 		this.file = wf;
+		this.methods = new HashMap<String,WhileFile.MethodDecl>();
+		this.types = new HashMap<String,WhileFile.TypeDecl>();
+		this.macros = new HashMap<String,WhileFile.MacroDecl>();
+
+		for(WhileFile.Decl declaration : wf.declarations) {
+			if(declaration instanceof WhileFile.MethodDecl) {
+				WhileFile.MethodDecl fd = (WhileFile.MethodDecl) declaration;
+				this.methods.put(fd.name(), fd);
+			} else if(declaration instanceof WhileFile.TypeDecl) {
+				WhileFile.TypeDecl fd = (WhileFile.TypeDecl) declaration;
+				this.types.put(fd.name(), fd);
+			} else if(declaration instanceof WhileFile.MacroDecl) {
+				WhileFile.MacroDecl fd = (WhileFile.MacroDecl) declaration;
+				this.macros.put(fd.name(), fd);
+			}
+		}
 
 		for(WhileFile.Decl declaration : wf.declarations) {
 			if(declaration instanceof WhileFile.MethodDecl) {
@@ -111,6 +127,12 @@ public class MacroExpander {
 	}
 
 	public void check(Stmt.Return stmt) {
+		if (stmt.getExpr() instanceof Expr.Invoke){
+			Expr.Invoke invoke = (Expr.Invoke)stmt.getExpr();
+			if (macros.containsKey(invoke.getName())){
+				stmt.setExpr(macros.get(invoke.getName()).getExpr());
+			}
+		}
 	}
 
 	public void check(Stmt.IfElse stmt) {

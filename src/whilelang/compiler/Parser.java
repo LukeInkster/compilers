@@ -101,7 +101,7 @@ public class Parser {
 	 * Parse a macro declaration of the following form:
 	 *
 	 * <pre>
-	 * TypeDecl ::= "macro" Ident "(" MacroParameters ")" is Expr
+	 * MacroDecl ::= "macro" Ident "(" MacroParameters ")" is Expr
 	 * </pre>
 	 *
 	 * @return
