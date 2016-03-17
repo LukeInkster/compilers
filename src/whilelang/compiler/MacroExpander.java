@@ -22,8 +22,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
 
 import whilelang.ast.*;
+import whilelang.ast.Stmt.Case;
+import whilelang.ast.WhileFile.MacroDecl;
+import whilelang.ast.WhileFile.MacroParameter;
 import whilelang.ast.WhileFile.MethodDecl;
 import whilelang.util.Pair;
 import whilelang.util.SyntacticElement;
@@ -112,41 +116,149 @@ public class MacroExpander {
 		}
 	}
 
-
 	public void check(Stmt.VariableDeclaration stmt) {
-
+		stmt.setExpr(expandMacro(stmt.getExpr()));
 	}
 
 	public void check(Stmt.Assert stmt) {
+		stmt.setExpr(expandMacro(stmt.getExpr()));
 	}
 
 	public void check(Stmt.Assign stmt) {
+		stmt.setRhs(expandMacro(stmt.getRhs()));
 	}
 
 	public void check(Stmt.Print stmt) {
+		stmt.setExpr(expandMacro(stmt.getExpr()));
 	}
 
 	public void check(Stmt.Return stmt) {
-		if (stmt.getExpr() instanceof Expr.Invoke){
-			Expr.Invoke invoke = (Expr.Invoke)stmt.getExpr();
-			if (macros.containsKey(invoke.getName())){
-				stmt.setExpr(macros.get(invoke.getName()).getExpr());
-			}
-		}
+		stmt.setExpr(expandMacro(stmt.getExpr()));
 	}
 
 	public void check(Stmt.IfElse stmt) {
+		check(stmt.getFalseBranch());
+		check(stmt.getTrueBranch());
+		stmt.setCondition(expandMacro(stmt.getCondition()));
 	}
 
 	public void check(Stmt.For stmt) {
+		stmt.setCondition(expandMacro(stmt.getCondition()));
+		for (Stmt innerStmt : stmt.getBody()){
+			check(innerStmt);
+		}
 	}
 
 	public void check(Stmt.While stmt) {
+		stmt.setCondition(expandMacro(stmt.getCondition()));
+		for (Stmt innerStmt : stmt.getBody()){
+			check(innerStmt);
+		}
 	}
 
 	public void check(Stmt.Do stmt) {
+		stmt.setCondition(expandMacro(stmt.getCondition()));
+		for (Stmt innerStmt : stmt.getBody()){
+			check(innerStmt);
+		}
 	}
 
 	public void check(Stmt.Switch stmt) {
+		stmt.setExpr(expandMacro(stmt.getExpr()));
+		for (Case caseStmt : stmt.getCases()){
+			check(caseStmt.getBody());
+		}
 	}
+
+	private Expr expandMacro(Expr expr) {
+		if (expr instanceof Expr.Invoke){
+			Expr.Invoke invoke = (Expr.Invoke) expr;
+			if (macros.containsKey(invoke.getName())){
+				Expr macroExpr = macros.get(invoke.getName()).getExpr();
+
+				List<MacroParameter> macroParams = macros.get(invoke.getName()).getParameters();
+				Map<String, Expr> paramMap = new HashMap<String, Expr>();
+				for (int i = 0; i < macroParams.size(); i++){
+					paramMap.put(macroParams.get(i).getName(), invoke.getArguments().get(i));
+				}
+
+				return replaceInvokeMacroArgs(macroExpr, paramMap);
+			}
+		}
+		else if (expr instanceof Expr.Binary){
+			Expr.Binary binary = (Expr.Binary) expr;
+			return new Expr.Binary(binary.getOp(),
+					expandMacro(binary.getLhs()),
+					expandMacro(binary.getRhs()),
+					binary.attributes());
+		}
+		else if (expr instanceof Expr.ArrayInitialiser){
+			Expr.ArrayInitialiser init = (Expr.ArrayInitialiser) expr;
+			Attribute[] attrs = init.attributes().toArray(new Attribute[init.attributes().size()]);
+			List<Expr> args = new ArrayList<Expr>(init.getArguments().size());
+			for (Expr e : init.getArguments()){
+				args.add(expandMacro(e));
+			}
+			return new Expr.ArrayInitialiser(args, attrs);
+		}
+		else if (expr instanceof Expr.Unary){
+			Expr.Unary unary = (Expr.Unary) expr;
+			Attribute[] attrs = unary.attributes().toArray(new Attribute[unary.attributes().size()]);
+			return new Expr.Unary(unary.getOp(), expandMacro(unary.getExpr()), attrs);
+		}
+		else if (expr instanceof Expr.ArrayGenerator){
+			Expr.ArrayGenerator gen = (Expr.ArrayGenerator) expr;
+			Attribute[] attrs = gen.attributes().toArray(new Attribute[gen.attributes().size()]);
+			return new Expr.ArrayGenerator(
+					expandMacro(gen.getValue()),
+					expandMacro(gen.getSize()),
+					attrs);
+		}
+		else if (expr instanceof Expr.RecordConstructor){
+			Expr.RecordConstructor rCon = (Expr.RecordConstructor) expr;
+			Attribute[] attrs = rCon.attributes().toArray(new Attribute[rCon.attributes().size()]);
+			List<Pair<String, Expr>> pairs = new ArrayList<Pair<String, Expr>>();
+			for (Pair<String, Expr> p : rCon.getFields()){
+				pairs.add(new Pair<String, Expr>(p.first(), expandMacro(p.second())));
+			}
+			return new Expr.RecordConstructor(pairs, attrs);
+		}
+		else if (expr instanceof Expr.RecordAccess){
+			Expr.RecordAccess rAcc = (Expr.RecordAccess) expr;
+			Attribute[] attrs = rAcc.attributes().toArray(new Attribute[rAcc.attributes().size()]);
+			return new Expr.RecordAccess(expandMacro(rAcc.getSource()), rAcc.getName(), attrs);
+		}
+		return expr;
+	}
+
+	private Expr replaceInvokeMacroArgs(Expr expr, Map<String, Expr> paramMap) {
+		if (expr instanceof Expr.Invoke){
+			Expr.Invoke invoke = (Expr.Invoke) expr;
+			Attribute[] attrs = invoke.attributes().toArray(new Attribute[invoke.attributes().size()]);
+			List<Expr> args = new ArrayList<Expr>(invoke.getArguments().size());
+			for (Expr e : invoke.getArguments()){
+				args.add(expandMacro(e));
+			}
+			return new Expr.Invoke(invoke.getName(), args, attrs);
+		}
+		if (expr instanceof Expr.Variable){
+			Expr.Variable variable = (Expr.Variable) expr;
+			if (paramMap.containsKey(variable.getName())) return paramMap.get(variable.getName());
+			else return variable;
+		}
+		if (expr instanceof Expr.Binary){
+			Expr.Binary binary = (Expr.Binary) expr;
+			return new Expr.Binary(binary.getOp(),
+				replaceInvokeMacroArgs(binary.getLhs(), paramMap),
+				replaceInvokeMacroArgs(binary.getRhs(), paramMap),
+				binary.attributes());
+		}
+		if (expr instanceof Expr.Unary){
+			Expr.Unary unary = (Expr.Unary) expr;
+			return new Expr.Unary(unary.getOp(), replaceInvokeMacroArgs(unary.getExpr(), paramMap));
+		}
+
+		return expr;
+	}
+
 }

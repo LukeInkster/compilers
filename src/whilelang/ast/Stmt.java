@@ -51,7 +51,7 @@ public interface Stmt extends SyntacticElement {
 	public static final class Assert extends SyntacticElement.Impl implements
 			Stmt {
 
-		private final Expr expr;
+		private Expr expr;
 
 		/**
 		 * Construct an assert statement from a given expression.
@@ -89,6 +89,15 @@ public interface Stmt extends SyntacticElement {
 		public Expr getExpr() {
 			return expr;
 		}
+
+		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setExpr(Expr expr) {
+			this.expr = expr;
+		}
 	}
 
 
@@ -117,7 +126,7 @@ public interface Stmt extends SyntacticElement {
 			Stmt {
 
 		private final Expr.LVal lhs;
-		private final Expr rhs;
+		private Expr rhs;
 
 		/**
 		 * Create an assignment from a given <code>lhs</code> and
@@ -171,6 +180,15 @@ public interface Stmt extends SyntacticElement {
 		 */
 		public Expr getRhs() {
 			return rhs;
+		}
+
+		/**
+		 * Set the right-hand side of this assignment.
+		 *
+		 * @return Guaranteed non-null.
+		 */
+		public void setRhs(Expr rhs) {
+			this.rhs = rhs;
 		}
 	}
 
@@ -237,7 +255,7 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
-		 * Get the optional return value.
+		 * Set the optional return value.
 		 *
 		 * @return --- May be <code>null</code>.
 		 */
@@ -268,7 +286,7 @@ public interface Stmt extends SyntacticElement {
 	 */
 	public static final class While extends SyntacticElement.Impl implements Stmt {
 
-		private final Expr condition;
+		private Expr condition;
 		private final ArrayList<Stmt> body;
 
 		/**
@@ -317,6 +335,15 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setCondition(Expr condition) {
+			this.condition = condition;
+		}
+
+		/**
 		 * Get the statements making up the loop body.
 		 *
 		 * @return Guarantted to be non-null.
@@ -348,7 +375,7 @@ public interface Stmt extends SyntacticElement {
 	 */
 	public static final class Do extends SyntacticElement.Impl implements Stmt {
 
-		private final Expr condition;
+		private Expr condition;
 		private final ArrayList<Stmt> body;
 
 		/**
@@ -397,6 +424,15 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setCondition(Expr condition) {
+			this.condition = condition;
+		}
+
+		/**
 		 * Get the statements making up the loop body.
 		 *
 		 * @return Guarantted to be non-null.
@@ -442,7 +478,7 @@ public interface Stmt extends SyntacticElement {
 	public static final class For extends SyntacticElement.Impl implements Stmt {
 
 		private final VariableDeclaration declaration;
-		private final Expr condition;
+		private Expr condition;
 		private final Stmt increment;
 		private final ArrayList<Stmt> body;
 
@@ -513,6 +549,15 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setCondition(Expr condition) {
+			this.condition = condition;
+		}
+
+		/**
 		 * Get the increment statement.
 		 *
 		 * @return May be null.
@@ -550,7 +595,7 @@ public interface Stmt extends SyntacticElement {
 	public static final class IfElse extends SyntacticElement.Impl implements
 			Stmt {
 
-		private final Expr condition;
+		private Expr condition;
 		private final ArrayList<Stmt> trueBranch;
 		private final ArrayList<Stmt> falseBranch;
 
@@ -608,6 +653,15 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
+		 * Get the if-condition.
+		 *
+		 * @return May not be null.
+		 */
+		public void setCondition(Expr condition) {
+			this.condition = condition;
+		}
+
+		/**
 		 * Get the true branch, which consists of zero or more statements.
 		 *
 		 * @return May not be null.
@@ -645,7 +699,7 @@ public interface Stmt extends SyntacticElement {
 	public static final class Print extends SyntacticElement.Impl implements
 			Stmt {
 
-		private final Expr expr;
+		private Expr expr;
 
 		/**
 		 * Construct a print statement from a given expression.
@@ -682,6 +736,15 @@ public interface Stmt extends SyntacticElement {
 		 */
 		public Expr getExpr() {
 			return expr;
+		}
+
+		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setExpr(Expr expr) {
+			this.expr = expr;
 		}
 	}
 
@@ -776,7 +839,7 @@ public interface Stmt extends SyntacticElement {
 	 *
 	 */
 	public static final class Switch extends SyntacticElement.Impl implements Stmt {
-		private final Expr expr;
+		private Expr expr;
 		private final ArrayList<Case> cases;
 
 		/**
@@ -825,6 +888,15 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setExpr(Expr expr) {
+			this.expr = expr;
+		}
+
+		/**
 		 * Get the list of zero or more cases which are used to match against
 		 * the given expression.
 		 *
@@ -857,7 +929,7 @@ public interface Stmt extends SyntacticElement {
 			Stmt {
 		private final Type type;
 		private final String name;
-		private final Expr expr;
+		private Expr expr;
 
 		/**
 		 * Construct a variable declaration from a given type, variable name and
@@ -933,6 +1005,15 @@ public interface Stmt extends SyntacticElement {
 		 */
 		public Expr getExpr() {
 			return expr;
+		}
+
+		/**
+		 * Set the optional return value.
+		 *
+		 * @return --- May be <code>null</code>.
+		 */
+		public void setExpr(Expr expr) {
+			this.expr = expr;
 		}
 	}
 }
