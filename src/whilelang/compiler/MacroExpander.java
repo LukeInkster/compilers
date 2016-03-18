@@ -180,7 +180,16 @@ public class MacroExpander {
 					paramMap.put(macroParams.get(i).getName(), invoke.getArguments().get(i));
 				}
 
-				return replaceInvokeMacroArgs(expandMacros(macroExpr), paramMap);
+				Expr macro = replaceInvokeMacroArgs(macroExpr, paramMap);
+				return expandMacros(macro);
+			}
+			else {
+				List<Expr> args = new ArrayList<Expr>(invoke.getArguments().size());
+				for (Expr e : invoke.getArguments()){
+					args.add(expandMacros(e));
+				}
+				Attribute[] attrs = invoke.attributes().toArray(new Attribute[invoke.attributes().size()]);
+				return new Expr.Invoke(invoke.getName(), args, attrs);
 			}
 		}
 		else if (expr instanceof Expr.Binary){
@@ -206,11 +215,12 @@ public class MacroExpander {
 		}
 		else if (expr instanceof Expr.ArrayGenerator){
 			Expr.ArrayGenerator gen = (Expr.ArrayGenerator) expr;
-			Attribute[] attrs = gen.attributes().toArray(new Attribute[gen.attributes().size()]);
+
+			Attribute[] attrs = attributesAsArray(gen);
 			return new Expr.ArrayGenerator(
-					expandMacros(gen.getValue()),
-					expandMacros(gen.getSize()),
-					attrs);
+				expandMacros(gen.getValue()),
+				expandMacros(gen.getSize()),
+				attrs);
 		}
 		else if (expr instanceof Expr.RecordConstructor){
 			Expr.RecordConstructor rCon = (Expr.RecordConstructor) expr;
@@ -236,12 +246,11 @@ public class MacroExpander {
 	private Expr replaceInvokeMacroArgs(Expr expr, Map<String, Expr> paramMap) {
 		if (expr instanceof Expr.Invoke){
 			Expr.Invoke invoke = (Expr.Invoke) expr;
-			Attribute[] attrs = invoke.attributes().toArray(new Attribute[invoke.attributes().size()]);
 			List<Expr> args = new ArrayList<Expr>(invoke.getArguments().size());
 			for (Expr e : invoke.getArguments()){
 				args.add(replaceInvokeMacroArgs(e, paramMap));
 			}
-			return new Expr.Invoke(invoke.getName(), args, attrs);
+			return new Expr.Invoke(invoke.getName(), args, attributesAsArray(invoke));
 		}
 		else if (expr instanceof Expr.Variable){
 			Expr.Variable variable = (Expr.Variable) expr;
@@ -261,20 +270,18 @@ public class MacroExpander {
 		}
 		else if (expr instanceof Expr.ArrayInitialiser){
 			Expr.ArrayInitialiser init = (Expr.ArrayInitialiser) expr;
-			Attribute[] attrs = init.attributes().toArray(new Attribute[init.attributes().size()]);
 			List<Expr> args = new ArrayList<Expr>(init.getArguments().size());
 			for (Expr e : init.getArguments()){
 				args.add(replaceInvokeMacroArgs(e, paramMap));
 			}
-			return new Expr.ArrayInitialiser(args, attrs);
+			return new Expr.ArrayInitialiser(args, attributesAsArray(init));
 		}
 		else if (expr instanceof Expr.ArrayGenerator){
 			Expr.ArrayGenerator gen = (Expr.ArrayGenerator) expr;
-			Attribute[] attrs = gen.attributes().toArray(new Attribute[gen.attributes().size()]);
 			return new Expr.ArrayGenerator(
 				replaceInvokeMacroArgs(gen.getValue(), paramMap),
 				replaceInvokeMacroArgs(gen.getSize(), paramMap),
-				attrs);
+				attributesAsArray(gen));
 		}
 		else if (expr instanceof Expr.RecordConstructor){
 			Expr.RecordConstructor rCon = (Expr.RecordConstructor) expr;
@@ -296,6 +303,10 @@ public class MacroExpander {
 		}
 
 		return expr;
+	}
+
+	private Attribute[] attributesAsArray(Expr e) {
+		return e.attributes().toArray(new Attribute[e.attributes().size()]);
 	}
 
 }

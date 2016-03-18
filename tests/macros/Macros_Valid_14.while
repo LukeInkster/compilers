@@ -1,0 +1,15 @@
+macro INC(x) is x+1
+
+int f(int y) {
+	if (y < 10) {
+		return f(INC(y));
+	}
+	else {
+		return y;
+	}
+}
+
+void main() {
+    assert f(5) == 10;
+    assert f(11) == 11;
+}

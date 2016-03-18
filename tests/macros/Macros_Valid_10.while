@@ -1,15 +1,15 @@
 macro NOT(x) is !x
 
 bool f(bool x) {
-    switch(NOT(x)) {
+    switch(x) {
     case true:
-	return false;
+	return NOT(x);
     default:
-	return true;
+	return NOT(x);
     }
 }
 
 void main() {
-    assert f(true) == true;
-    assert f(false) == false;
+    assert f(true) == false;
+    assert f(false) == true;
 }
