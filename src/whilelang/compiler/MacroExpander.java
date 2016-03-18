@@ -67,11 +67,9 @@ public class MacroExpander {
 			}
 		}
 
-		for(WhileFile.Decl declaration : wf.declarations) {
-			if(declaration instanceof WhileFile.MethodDecl) {
+		for(WhileFile.Decl declaration : wf.declarations)
+			if(declaration instanceof WhileFile.MethodDecl)
 				check((WhileFile.MethodDecl) declaration);
-			}
-		}
 	}
 
 	private void check(MethodDecl decl) {
@@ -79,39 +77,23 @@ public class MacroExpander {
 	}
 
 	public void check(List<Stmt> statements) {
-		for(Stmt s : statements) {
-			check(s);
-		}
+		for(Stmt s : statements) check(s);
 	}
 
 	public void check(Stmt stmt) {
-		if(stmt instanceof Stmt.Assert) {
-			check((Stmt.Assert) stmt);
-		} else if(stmt instanceof Stmt.Assign) {
-			check((Stmt.Assign) stmt);
-		} else if(stmt instanceof Stmt.Print) {
-			check((Stmt.Print) stmt);
-		} else if(stmt instanceof Stmt.Return) {
-			check((Stmt.Return) stmt);
-		} else if(stmt instanceof Stmt.Break) {
-			// nothing to do
-		} else if(stmt instanceof Stmt.Continue) {
-			// nothing to do
-		} else if(stmt instanceof Stmt.VariableDeclaration) {
-			check((Stmt.VariableDeclaration) stmt);
-		} else if(stmt instanceof Stmt.IfElse) {
-			check((Stmt.IfElse) stmt);
-		} else if(stmt instanceof Stmt.For) {
-			check((Stmt.For) stmt);
-		} else if(stmt instanceof Stmt.While) {
-			check((Stmt.While) stmt);
-		} else if(stmt instanceof Stmt.Do) {
-			check((Stmt.Do) stmt);
-		} else if(stmt instanceof Stmt.Switch) {
-			check((Stmt.Switch) stmt);
-		} else {
-			internalFailure("unknown statement encountered (" + stmt + ")", file.filename,stmt);
-		}
+		if(stmt instanceof Stmt.Assert)						check((Stmt.Assert) stmt);
+		else if(stmt instanceof Stmt.Assign)				check((Stmt.Assign) stmt);
+		else if(stmt instanceof Stmt.Print)					check((Stmt.Print) stmt);
+		else if(stmt instanceof Stmt.Return)				check((Stmt.Return) stmt);
+		else if(stmt instanceof Stmt.VariableDeclaration)	check((Stmt.VariableDeclaration) stmt);
+		else if(stmt instanceof Stmt.Break);				//Do nothing
+		else if(stmt instanceof Stmt.Continue);				//Do nothing
+		else if(stmt instanceof Stmt.IfElse)				check((Stmt.IfElse) stmt);
+		else if(stmt instanceof Stmt.For)					check((Stmt.For) stmt);
+		else if(stmt instanceof Stmt.While)					check((Stmt.While) stmt);
+		else if(stmt instanceof Stmt.Do)					check((Stmt.Do) stmt);
+		else if(stmt instanceof Stmt.Switch)				check((Stmt.Switch) stmt);
+		else internalFailure("unknown statement encountered (" + stmt + ")", file.filename,stmt);
 	}
 
 	public void check(Stmt.VariableDeclaration stmt) {
@@ -142,30 +124,22 @@ public class MacroExpander {
 
 	public void check(Stmt.For stmt) {
 		stmt.setCondition(expandMacros(stmt.getCondition()));
-		for (Stmt innerStmt : stmt.getBody()){
-			check(innerStmt);
-		}
+		for (Stmt innerStmt : stmt.getBody()) check(innerStmt);
 	}
 
 	public void check(Stmt.While stmt) {
 		stmt.setCondition(expandMacros(stmt.getCondition()));
-		for (Stmt innerStmt : stmt.getBody()){
-			check(innerStmt);
-		}
+		for (Stmt innerStmt : stmt.getBody()) check(innerStmt);
 	}
 
 	public void check(Stmt.Do stmt) {
 		stmt.setCondition(expandMacros(stmt.getCondition()));
-		for (Stmt innerStmt : stmt.getBody()){
-			check(innerStmt);
-		}
+		for (Stmt innerStmt : stmt.getBody()) check(innerStmt);
 	}
 
 	public void check(Stmt.Switch stmt) {
 		stmt.setExpr(expandMacros(stmt.getExpr()));
-		for (Case caseStmt : stmt.getCases()){
-			check(caseStmt.getBody());
-		}
+		for (Case caseStmt : stmt.getCases()) check(caseStmt.getBody());
 	}
 
 	private Expr expandMacros(Expr expr) {
@@ -180,61 +154,47 @@ public class MacroExpander {
 					paramMap.put(macroParams.get(i).getName(), invoke.getArguments().get(i));
 				}
 
-				Expr macro = replaceInvokeMacroArgs(macroExpr, paramMap);
-				return expandMacros(macro);
+				return expandMacros(replaceInvokeMacroArgs(macroExpr, paramMap));
 			}
 			else {
 				List<Expr> args = new ArrayList<Expr>(invoke.getArguments().size());
-				for (Expr e : invoke.getArguments()){
-					args.add(expandMacros(e));
-				}
-				Attribute[] attrs = invoke.attributes().toArray(new Attribute[invoke.attributes().size()]);
-				return new Expr.Invoke(invoke.getName(), args, attrs);
+				for (Expr e : invoke.getArguments()) args.add(expandMacros(e));
+				return new Expr.Invoke(invoke.getName(), args, attributesAsArray(invoke));
 			}
 		}
 		else if (expr instanceof Expr.Binary){
 			Expr.Binary binary = (Expr.Binary) expr;
 			return new Expr.Binary(binary.getOp(),
-					expandMacros(binary.getLhs()),
-					expandMacros(binary.getRhs()),
-					binary.attributes());
+				expandMacros(binary.getLhs()),
+				expandMacros(binary.getRhs()),
+				binary.attributes());
 		}
 		else if (expr instanceof Expr.ArrayInitialiser){
 			Expr.ArrayInitialiser init = (Expr.ArrayInitialiser) expr;
-			Attribute[] attrs = init.attributes().toArray(new Attribute[init.attributes().size()]);
 			List<Expr> args = new ArrayList<Expr>(init.getArguments().size());
-			for (Expr e : init.getArguments()){
-				args.add(expandMacros(e));
-			}
-			return new Expr.ArrayInitialiser(args, attrs);
+			for (Expr e : init.getArguments()) args.add(expandMacros(e));
+			return new Expr.ArrayInitialiser(args, attributesAsArray(init));
 		}
 		else if (expr instanceof Expr.Unary){
 			Expr.Unary unary = (Expr.Unary) expr;
-			Attribute[] attrs = unary.attributes().toArray(new Attribute[unary.attributes().size()]);
-			return new Expr.Unary(unary.getOp(), expandMacros(unary.getExpr()), attrs);
+			return new Expr.Unary(unary.getOp(), expandMacros(unary.getExpr()), attributesAsArray(unary));
 		}
 		else if (expr instanceof Expr.ArrayGenerator){
 			Expr.ArrayGenerator gen = (Expr.ArrayGenerator) expr;
-
-			Attribute[] attrs = attributesAsArray(gen);
 			return new Expr.ArrayGenerator(
 				expandMacros(gen.getValue()),
 				expandMacros(gen.getSize()),
-				attrs);
+				attributesAsArray(gen));
 		}
 		else if (expr instanceof Expr.RecordConstructor){
 			Expr.RecordConstructor rCon = (Expr.RecordConstructor) expr;
-			Attribute[] attrs = rCon.attributes().toArray(new Attribute[rCon.attributes().size()]);
 			List<Pair<String, Expr>> pairs = new ArrayList<Pair<String, Expr>>();
-			for (Pair<String, Expr> p : rCon.getFields()){
-				pairs.add(new Pair<String, Expr>(p.first(), expandMacros(p.second())));
-			}
-			return new Expr.RecordConstructor(pairs, attrs);
+			for (Pair<String, Expr> p : rCon.getFields()) pairs.add(new Pair<String, Expr>(p.first(), expandMacros(p.second())));
+			return new Expr.RecordConstructor(pairs, attributesAsArray(rCon));
 		}
 		else if (expr instanceof Expr.RecordAccess){
 			Expr.RecordAccess rAcc = (Expr.RecordAccess) expr;
-			Attribute[] attrs = rAcc.attributes().toArray(new Attribute[rAcc.attributes().size()]);
-			return new Expr.RecordAccess(expandMacros(rAcc.getSource()), rAcc.getName(), attrs);
+			return new Expr.RecordAccess(expandMacros(rAcc.getSource()), rAcc.getName(), attributesAsArray(rAcc));
 		}
 		else if (expr instanceof Expr.IndexOf){
 			Expr.IndexOf idx = (Expr.IndexOf) expr;
@@ -247,9 +207,7 @@ public class MacroExpander {
 		if (expr instanceof Expr.Invoke){
 			Expr.Invoke invoke = (Expr.Invoke) expr;
 			List<Expr> args = new ArrayList<Expr>(invoke.getArguments().size());
-			for (Expr e : invoke.getArguments()){
-				args.add(replaceInvokeMacroArgs(e, paramMap));
-			}
+			for (Expr e : invoke.getArguments()) args.add(replaceInvokeMacroArgs(e, paramMap));
 			return new Expr.Invoke(invoke.getName(), args, attributesAsArray(invoke));
 		}
 		else if (expr instanceof Expr.Variable){
@@ -271,9 +229,7 @@ public class MacroExpander {
 		else if (expr instanceof Expr.ArrayInitialiser){
 			Expr.ArrayInitialiser init = (Expr.ArrayInitialiser) expr;
 			List<Expr> args = new ArrayList<Expr>(init.getArguments().size());
-			for (Expr e : init.getArguments()){
-				args.add(replaceInvokeMacroArgs(e, paramMap));
-			}
+			for (Expr e : init.getArguments()) args.add(replaceInvokeMacroArgs(e, paramMap));
 			return new Expr.ArrayInitialiser(args, attributesAsArray(init));
 		}
 		else if (expr instanceof Expr.ArrayGenerator){
@@ -285,28 +241,24 @@ public class MacroExpander {
 		}
 		else if (expr instanceof Expr.RecordConstructor){
 			Expr.RecordConstructor rCon = (Expr.RecordConstructor) expr;
-			Attribute[] attrs = rCon.attributes().toArray(new Attribute[rCon.attributes().size()]);
 			List<Pair<String, Expr>> pairs = new ArrayList<Pair<String, Expr>>();
 			for (Pair<String, Expr> p : rCon.getFields()){
 				pairs.add(new Pair<String, Expr>(p.first(), replaceInvokeMacroArgs(p.second(), paramMap)));
 			}
-			return new Expr.RecordConstructor(pairs, attrs);
+			return new Expr.RecordConstructor(pairs, attributesAsArray(rCon));
 		}
 		else if (expr instanceof Expr.RecordAccess){
 			Expr.RecordAccess rAcc = (Expr.RecordAccess) expr;
-			Attribute[] attrs = rAcc.attributes().toArray(new Attribute[rAcc.attributes().size()]);
-			return new Expr.RecordAccess(replaceInvokeMacroArgs(rAcc.getSource(), paramMap), rAcc.getName(), attrs);
+			return new Expr.RecordAccess(replaceInvokeMacroArgs(rAcc.getSource(), paramMap), rAcc.getName(), attributesAsArray(rAcc));
 		}
 		else if (expr instanceof Expr.IndexOf){
 			Expr.IndexOf idx = (Expr.IndexOf) expr;
 			return new Expr.IndexOf(replaceInvokeMacroArgs(idx.getSource(), paramMap), idx.getIndex(), idx.attributes());
 		}
-
 		return expr;
 	}
 
 	private Attribute[] attributesAsArray(Expr e) {
 		return e.attributes().toArray(new Attribute[e.attributes().size()]);
 	}
-
 }
