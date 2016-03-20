@@ -1,0 +1,11 @@
+macro MULT(x,y) is x * y
+macro SQUARE(x) is MULT(x,x)
+
+int f(int y) {
+    return SQUARE(y);
+}
+
+void main() {
+    assert f(2) == 4;
+    assert f(-7) == 49;
+}

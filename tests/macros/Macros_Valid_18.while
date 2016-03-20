@@ -1,0 +1,15 @@
+macro Inc(x) is x + 1
+
+int f(int z) {
+    return Inc(z);
+}
+
+macro CallF(x) is f(x)
+
+int g(int y) {
+    return CallF(y);
+}
+
+void main() {
+    assert g(2) == 3;
+}
