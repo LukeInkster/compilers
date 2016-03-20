@@ -210,10 +210,11 @@ public class DefiniteAssignment {
 
 	public ControlFlow check(Stmt.Do stmt, Defs environment) {
 		ControlFlow loop = check(stmt.getBody(), environment);
+		Defs defs = join(loop.nextEnvironment, loop.breakEnvironment);
 		//
-		check(stmt.getCondition(), loop.nextEnvironment);
+		check(stmt.getCondition(), defs);
 		//
-		return new ControlFlow(join(loop.nextEnvironment, loop.breakEnvironment), null);
+		return new ControlFlow(defs, null);
 	}
 
 	public ControlFlow check(Stmt.Switch stmt, Defs environment) {
