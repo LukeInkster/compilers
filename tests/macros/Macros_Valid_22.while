@@ -1,0 +1,11 @@
+macro ACCESS(arr, x) is arr[x]
+
+int f(int[] arr){
+    return ACCESS(arr, 0);
+}
+
+void main(){
+
+    assert f([1]) == 1;
+
+}

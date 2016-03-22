@@ -93,6 +93,7 @@ public class MacroExpander {
 		else if(stmt instanceof Stmt.While)					check((Stmt.While) stmt);
 		else if(stmt instanceof Stmt.Do)					check((Stmt.Do) stmt);
 		else if(stmt instanceof Stmt.Switch)				check((Stmt.Switch) stmt);
+		else if(stmt instanceof Expr.Invoke)				expandMacros((Expr.Invoke) stmt);
 		else internalFailure("unknown statement encountered (" + stmt + ")", file.filename,stmt);
 	}
 
@@ -123,7 +124,9 @@ public class MacroExpander {
 	}
 
 	public void check(Stmt.For stmt) {
+		check(stmt.getDeclaration());
 		stmt.setCondition(expandMacros(stmt.getCondition()));
+		check(stmt.getIncrement());
 		for (Stmt innerStmt : stmt.getBody()) check(innerStmt);
 	}
 
@@ -140,6 +143,14 @@ public class MacroExpander {
 	public void check(Stmt.Switch stmt) {
 		stmt.setExpr(expandMacros(stmt.getExpr()));
 		for (Case caseStmt : stmt.getCases()) check(caseStmt.getBody());
+	}
+
+	private List<Expr> expandMacros(List<Expr> exprs) {
+		List<Expr> expanded = new ArrayList<Expr>();
+		for (Expr expr : exprs){
+			expanded.add(expandMacros(expr));
+		}
+		return expanded;
 	}
 
 	private Expr expandMacros(Expr expr) {
@@ -189,7 +200,8 @@ public class MacroExpander {
 		else if (expr instanceof Expr.RecordConstructor){
 			Expr.RecordConstructor rCon = (Expr.RecordConstructor) expr;
 			List<Pair<String, Expr>> pairs = new ArrayList<Pair<String, Expr>>();
-			for (Pair<String, Expr> p : rCon.getFields()) pairs.add(new Pair<String, Expr>(p.first(), expandMacros(p.second())));
+			for (Pair<String, Expr> p : rCon.getFields())
+				pairs.add(new Pair<String, Expr>(p.first(), expandMacros(p.second())));
 			return new Expr.RecordConstructor(pairs, attributesAsArray(rCon));
 		}
 		else if (expr instanceof Expr.RecordAccess){
@@ -198,7 +210,9 @@ public class MacroExpander {
 		}
 		else if (expr instanceof Expr.IndexOf){
 			Expr.IndexOf idx = (Expr.IndexOf) expr;
-			return new Expr.IndexOf(expandMacros(idx.getSource()), idx.getIndex(), idx.attributes());
+			return new Expr.IndexOf(expandMacros(idx.getSource())
+					, expandMacros(idx.getIndex())
+					, idx.attributes());
 		}
 		return expr;
 	}
@@ -253,7 +267,9 @@ public class MacroExpander {
 		}
 		else if (expr instanceof Expr.IndexOf){
 			Expr.IndexOf idx = (Expr.IndexOf) expr;
-			return new Expr.IndexOf(replaceInvokeMacroArgs(idx.getSource(), paramMap), idx.getIndex(), idx.attributes());
+			return new Expr.IndexOf(replaceInvokeMacroArgs(idx.getSource(), paramMap)
+					, replaceInvokeMacroArgs(idx.getIndex(), paramMap)
+					, idx.attributes());
 		}
 		return expr;
 	}

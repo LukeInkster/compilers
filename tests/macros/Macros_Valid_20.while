@@ -1,0 +1,11 @@
+macro TWO(x) is 2
+
+int f(){
+    int[] arr = [0;TWO(1)];
+
+    return |arr|;
+}
+
+void main(){
+    assert f() == 2;
+}
