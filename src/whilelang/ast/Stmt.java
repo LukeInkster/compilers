@@ -26,36 +26,36 @@ import whilelang.util.*;
  * Represents a statement in the source code of a While program. Many standard
  * statement kinds are provided, including <code>if</code>, <code>while</code>,
  * <code>for</code>, etc.
- *
+ * 
  * @author David J. Pearce
- *
+ * 
  */
 public interface Stmt extends SyntacticElement {
 
 	/**
 	 * Represents an assert statement which checks whether a given expression
 	 * evaluates to true or not.
-	 *
+	 * 
 	 * <pre>
 	 * void f(int x) {
 	 * 	assert x >= 0;
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * If the assertion fails, then a runtime fault is raised and execution
 	 * aborts.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Assert extends SyntacticElement.Impl implements
 			Stmt {
 
-		private Expr expr;
+		private final Expr expr;
 
 		/**
 		 * Construct an assert statement from a given expression.
-		 *
+		 * 
 		 * @param expr
 		 *            May not be null.
 		 * @param attributes
@@ -67,7 +67,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Construct a print statement from a given expression.
-		 *
+		 * 
 		 * @param expr
 		 *            May not be null.
 		 * @param attributes
@@ -83,55 +83,46 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the expression whose value is to be printed.
-		 *
+		 * 
 		 * @return Guaranteed to be non-null.
 		 */
 		public Expr getExpr() {
 			return expr;
 		}
-
-		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setExpr(Expr expr) {
-			this.expr = expr;
-		}
 	}
 
-
+	
 	/**
 	 * Represents an assignment statement of the form <code>lhs = rhs</code>.
 	 * Here, the <code>rhs</code> is any expression, whilst the <code>lhs</code>
 	 * must be an <code>LVal</code> --- that is, an expression permitted on the
 	 * left-side of an assignment. The following illustrates different possible
 	 * assignment statements:
-	 *
+	 * 
 	 * <pre>
 	 * x = y; // variable assignment
 	 * x.f = y; // field assignment
 	 * x[i] = y; // list assignment
 	 * x[i].f = y; // compound assignment
 	 * </pre>
-	 *
+	 * 
 	 * The last assignment here illustrates that the left-hand side of an
 	 * assignment can be arbitrarily complex, involving nested assignments into
 	 * lists and records.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Assign extends SyntacticElement.Impl implements
 			Stmt {
 
 		private final Expr.LVal lhs;
-		private Expr rhs;
+		private final Expr rhs;
 
 		/**
 		 * Create an assignment from a given <code>lhs</code> and
 		 * <code>rhs</code>.
-		 *
+		 * 
 		 * @param lhs
 		 *            --- left-hand side, which may not be <code>null</code>.
 		 * @param rhs
@@ -147,7 +138,7 @@ public interface Stmt extends SyntacticElement {
 		/**
 		 * Create an assignment from a given <code>lhs</code> and
 		 * <code>rhs</code>.
-		 *
+		 * 
 		 * @param lhs
 		 *            left-hand side, which may not be <code>null</code>.
 		 * @param rhs
@@ -166,7 +157,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the left-hand side of this assignment.
-		 *
+		 * 
 		 * @return Guaranteed non-null.
 		 */
 		public Expr.LVal getLhs() {
@@ -175,47 +166,38 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the right-hand side of this assignment.
-		 *
+		 * 
 		 * @return Guaranteed non-null.
 		 */
 		public Expr getRhs() {
 			return rhs;
-		}
-
-		/**
-		 * Set the right-hand side of this assignment.
-		 *
-		 * @return Guaranteed non-null.
-		 */
-		public void setRhs(Expr rhs) {
-			this.rhs = rhs;
 		}
 	}
 
 	/**
 	 * Represents a return statement which (optionally) returns a value. The
 	 * following illustrates:
-	 *
+	 * 
 	 * <pre>
 	 * int f(int x) {
 	 * 	return x + 1;
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * Here, we see a simple <code>return</code> statement which returns an
 	 * <code>int</code> value.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Return extends SyntacticElement.Impl implements
 			Stmt {
 
-		private Expr expr;
+		private final Expr expr;
 
 		/**
 		 * Create a given return statement with an optional return value.
-		 *
+		 * 
 		 * @param expr
 		 *            the return value, which may be <code>null</code>.
 		 * @param attributes
@@ -227,7 +209,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Create a given return statement with an optional return value.
-		 *
+		 * 
 		 * @param expr
 		 *            the return value, which may be <code>null</code>.
 		 * @param attributes
@@ -247,20 +229,11 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the optional return value.
-		 *
+		 * 
 		 * @return --- May be <code>null</code>.
 		 */
 		public Expr getExpr() {
 			return expr;
-		}
-
-		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setExpr(Expr expr) {
-			this.expr = expr;
 		}
 	}
 
@@ -268,7 +241,7 @@ public interface Stmt extends SyntacticElement {
 	 * Represents a while statement whose body is made up from a block of
 	 * statements separated by curly braces. Note that, unlike C or Java, the
 	 * body must be contained within curly braces. As an example:
-	 *
+	 * 
 	 * <pre>
 	 * int sum([int] xs) {
 	 *   int r = 0;
@@ -280,19 +253,19 @@ public interface Stmt extends SyntacticElement {
 	 *   return r;
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class While extends SyntacticElement.Impl implements Stmt {
 
-		private Expr condition;
+		private final Expr condition;
 		private final ArrayList<Stmt> body;
 
 		/**
 		 * Construct a While statement from a given condition and body of
 		 * statements.
-		 *
+		 * 
 		 * @param condition
 		 *            non-null expression.
 		 * @param body
@@ -310,7 +283,7 @@ public interface Stmt extends SyntacticElement {
 		/**
 		 * Construct a While statement from a given condition and body of
 		 * statements.
-		 *
+		 * 
 		 * @param condition
 		 *            non-null expression.
 		 * @param body
@@ -327,7 +300,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the condition which controls the while loop.
-		 *
+		 * 
 		 * @return Guaranteed to be non-null.
 		 */
 		public Expr getCondition() {
@@ -335,106 +308,8 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setCondition(Expr condition) {
-			this.condition = condition;
-		}
-
-		/**
 		 * Get the statements making up the loop body.
-		 *
-		 * @return Guarantted to be non-null.
-		 */
-		public List<Stmt> getBody() {
-			return body;
-		}
-	}
-
-	/**
-	 * Represents a do statement whose body is made up from a block of
-	 * statements separated by curly braces. Note that, unlike C or Java, the
-	 * body must be contained within curly braces. As an example:
-	 *
-	 * <pre>
-	 * int sum([int] xs) {
-	 *   int r = 0;
-	 *   int i = 0;
-	 *   while(i < |xs|) {
-	 *     r = r + xs[i];
-	 *     i = i + 1;
-	 *   }
-	 *   return r;
-	 * }
-	 * </pre>
-	 *
-	 * @author David J. Pearce
-	 *
-	 */
-	public static final class Do extends SyntacticElement.Impl implements Stmt {
-
-		private Expr condition;
-		private final ArrayList<Stmt> body;
-
-		/**
-		 * Construct a Do statement from a given condition and body of
-		 * statements.
-		 *
-		 * @param condition
-		 *            non-null expression.
-		 * @param body
-		 *            non-null collection which contains zero or more
-		 *            statements.
-		 * @param attributes
-		 */
-		public Do(Expr condition, Collection<Stmt> body,
-				Attribute... attributes) {
-			super(attributes);
-			this.condition = condition;
-			this.body = new ArrayList<Stmt>(body);
-		}
-
-		/**
-		 * Construct a While statement from a given condition and body of
-		 * statements.
-		 *
-		 * @param condition
-		 *            non-null expression.
-		 * @param body
-		 *            non-null collection which contains zero or more
-		 *            statements.
-		 * @param attributes
-		 */
-		public Do(Expr condition, Expr invariant, Collection<Stmt> body,
-				Collection<Attribute> attributes) {
-			super(attributes);
-			this.condition = condition;
-			this.body = new ArrayList<Stmt>(body);
-		}
-
-		/**
-		 * Get the condition which controls the while loop.
-		 *
-		 * @return Guaranteed to be non-null.
-		 */
-		public Expr getCondition() {
-			return condition;
-		}
-
-		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setCondition(Expr condition) {
-			this.condition = condition;
-		}
-
-		/**
-		 * Get the statements making up the loop body.
-		 *
+		 * 
 		 * @return Guarantted to be non-null.
 		 */
 		public List<Stmt> getBody() {
@@ -446,7 +321,7 @@ public interface Stmt extends SyntacticElement {
 	 * Represents a classical for statement made up from a <i>variable
 	 * declaration</i>, a <i>loop condition</i> and an <i>increment
 	 * statement</i>. The following illustrates:
-	 *
+	 * 
 	 * <pre>
 	 * int sum([int] xs) {
 	 *   int r = 0;
@@ -456,12 +331,12 @@ public interface Stmt extends SyntacticElement {
 	 *   return r;
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * Observe that the variable declaration does not need to supply an
 	 * initialiser expression. Furthermore, like C and Java, the variable
 	 * declaration, condition and increment statements are all optional. Thus,
 	 * we can safely rewrite the above as follows:
-	 *
+	 * 
 	 * <pre>
 	 * int sum([int] xs) {
 	 *   int r = 0;
@@ -471,14 +346,14 @@ public interface Stmt extends SyntacticElement {
 	 *   return r;
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class For extends SyntacticElement.Impl implements Stmt {
 
 		private final VariableDeclaration declaration;
-		private Expr condition;
+		private final Expr condition;
 		private final Stmt increment;
 		private final ArrayList<Stmt> body;
 
@@ -486,7 +361,7 @@ public interface Stmt extends SyntacticElement {
 		 * Construct a for loop from a given declaration, condition and
 		 * increment. Note that the declaration, conditional and increment are
 		 * all optional.
-		 *
+		 * 
 		 * @param declaration
 		 *            An variable declation, which may be null.
 		 * @param condition
@@ -510,7 +385,7 @@ public interface Stmt extends SyntacticElement {
 		 * Construct a for loop from a given declaration, condition and
 		 * increment. Note that the declaration, conditional and increment are
 		 * all optional.
-		 *
+		 * 
 		 * @param declaration
 		 *            An variable declation, which may be null.
 		 * @param condition
@@ -532,7 +407,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the variable declaration for this loop.
-		 *
+		 * 
 		 * @return May be null.
 		 */
 		public VariableDeclaration getDeclaration() {
@@ -541,25 +416,16 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the loop condition.
-		 *
+		 * 
 		 * @return May be null.
 		 */
-		public Expr getCondition() {
+		public Expr getCondition() {			
 			return condition;
 		}
 
 		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setCondition(Expr condition) {
-			this.condition = condition;
-		}
-
-		/**
 		 * Get the increment statement.
-		 *
+		 * 
 		 * @return May be null.
 		 */
 		public Stmt getIncrement() {
@@ -568,7 +434,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the loop body.
-		 *
+		 * 
 		 * @return May not be null.
 		 */
 		public ArrayList<Stmt> getBody() {
@@ -590,19 +456,19 @@ public interface Stmt extends SyntacticElement {
 	 * }
 	 * </pre>
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class IfElse extends SyntacticElement.Impl implements
 			Stmt {
 
-		private Expr condition;
+		private final Expr condition;
 		private final ArrayList<Stmt> trueBranch;
 		private final ArrayList<Stmt> falseBranch;
 
 		/**
 		 * Construct an if-else statement from a condition, true branch and
 		 * optional false branch.
-		 *
+		 * 
 		 * @param condition
 		 *            May not be null.
 		 * @param trueBranch
@@ -624,7 +490,7 @@ public interface Stmt extends SyntacticElement {
 		/**
 		 * Construct an if-else statement from a condition, true branch and
 		 * optional false branch.
-		 *
+		 * 
 		 * @param condition
 		 *            May not be null.
 		 * @param trueBranch
@@ -645,7 +511,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the if-condition.
-		 *
+		 * 
 		 * @return May not be null.
 		 */
 		public Expr getCondition() {
@@ -653,17 +519,8 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
-		 * Get the if-condition.
-		 *
-		 * @return May not be null.
-		 */
-		public void setCondition(Expr condition) {
-			this.condition = condition;
-		}
-
-		/**
 		 * Get the true branch, which consists of zero or more statements.
-		 *
+		 * 
 		 * @return May not be null.
 		 */
 		public List<Stmt> getTrueBranch() {
@@ -672,7 +529,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the false branch, which consists of zero or more statements.
-		 *
+		 * 
 		 * @return May not be null.
 		 */
 		public List<Stmt> getFalseBranch() {
@@ -683,27 +540,27 @@ public interface Stmt extends SyntacticElement {
 	/**
 	 * Represents a print statement which writes expressions (as strings) to the
 	 * console. The following illustrates:
-	 *
+	 * 
 	 * <pre>
 	 * void f(int x) {
 	 *  print x+1;
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * Observe that the computed value for the expression to be printed is the
 	 * implicitly coerced into a string.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Print extends SyntacticElement.Impl implements
 			Stmt {
 
-		private Expr expr;
+		private final Expr expr;
 
 		/**
 		 * Construct a print statement from a given expression.
-		 *
+		 * 
 		 * @param expr
 		 *            May not be null.
 		 * @param attributes
@@ -715,7 +572,7 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Construct a print statement from a given expression.
-		 *
+		 * 
 		 * @param expr
 		 *            May not be null.
 		 * @param attributes
@@ -731,29 +588,20 @@ public interface Stmt extends SyntacticElement {
 
 		/**
 		 * Get the expression whose value is to be printed.
-		 *
+		 * 
 		 * @return Guaranteed to be non-null.
 		 */
 		public Expr getExpr() {
 			return expr;
 		}
-
-		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setExpr(Expr expr) {
-			this.expr = expr;
-		}
 	}
-
+	
 	/**
 	 * Represents a break statement which immediately terminates the enclosing
 	 * loop or switch statement
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Break extends SyntacticElement.Impl implements Stmt {
 		public Break(Attribute... attributes) {
@@ -768,9 +616,9 @@ public interface Stmt extends SyntacticElement {
 	/**
 	 * Represents a continue statement which immediately moves a loop onto the
 	 * next iteration.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Continue extends SyntacticElement.Impl implements Stmt {
 		public Continue(Attribute... attributes) {
@@ -781,49 +629,49 @@ public interface Stmt extends SyntacticElement {
 			super(attributes);
 		}
 	}
-
+	
 	/**
 	 * Represents a single case in a switch statement which matches against a
 	 * given value. In the case of a null value, then this is a "default" case.
-	 *
+	 * 
 	 * @author David J. Pearce
 	 *
 	 */
 	public static final class Case  extends SyntacticElement.Impl {
 		private final Expr.Constant value;
 		private final ArrayList<Stmt> body;
-
+		
 		public Case(Expr.Constant value, List<Stmt> body, Attribute... attributes) {
 			super(attributes);
 			this.value = value;
 			this.body = new ArrayList<Stmt>(body);
 		}
-
+		
 		public Case(Expr.Constant value, List<Stmt> body, Collection<Attribute> attributes) {
 			super(attributes);
 			this.value = value;
 			this.body = new ArrayList<Stmt>(body);
 		}
-
+		
 		public Expr getValue() {
 			return value;
 		}
-
+		
 		public List<Stmt> getBody() {
 			return body;
 		}
-
+		
 		public boolean isDefault() {
 			return value == null;
 		}
 	}
-
+	
 	/**
 	 * Represents a switch statement which selects between a number of different
 	 * cases, based on a given value. The following illustrates:
-	 *
+	 * 
 	 * <pre>
-	 * int f(int x) {
+	 * int f(int x) { 
 	 *  switch(x) {
 	 *   case 1:
 	 *     return 1;
@@ -832,20 +680,20 @@ public interface Stmt extends SyntacticElement {
 	 *   default:
 	 *     return -1;
 	 *  }
-	 * }
+	 * } 
 	 * </pre>
-	 *
+	 * 
 	 * @author David J. Pearce
 	 *
 	 */
 	public static final class Switch extends SyntacticElement.Impl implements Stmt {
-		private Expr expr;
+		private final Expr expr;
 		private final ArrayList<Case> cases;
-
+		
 		/**
 		 * Construct a switch statement from a given expression and a list of
 		 * cases, of which one may be a "default".
-		 *
+		 * 
 		 * @param expr
 		 *            The expression whose generated value is used to match
 		 *            cases against
@@ -859,11 +707,11 @@ public interface Stmt extends SyntacticElement {
 			this.expr = expr;
 			this.cases = new ArrayList<Case>(cases);
 		}
-
+		
 		/**
 		 * Construct a switch statement from a given expression and a list of
 		 * cases, of which one may be a "default".
-		 *
+		 * 
 		 * @param expr
 		 *            The expression whose generated value is used to match
 		 *            cases against
@@ -877,64 +725,55 @@ public interface Stmt extends SyntacticElement {
 			this.expr = expr;
 			this.cases = new ArrayList<Case>(cases);
 		}
-
+		
 		/**
 		 * Get the expression which this statement is matching against.
-		 *
+		 * 
 		 * @return
 		 */
 		public Expr getExpr() {
 			return expr;
 		}
-
-		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setExpr(Expr expr) {
-			this.expr = expr;
-		}
-
+		
 		/**
 		 * Get the list of zero or more cases which are used to match against
 		 * the given expression.
-		 *
+		 * 
 		 * @return
 		 */
 		public List<Case> getCases() {
 			return cases;
-		}
+		}		
 	}
-
+	
 	/**
 	 * Represents a variable declaration which is made up from a type, a
 	 * variable name and an (optional) initialiser expression. If an initialiser
 	 * is given, then this will be evaluated and assigned to the variable when
 	 * the declaration is executed. Some example declarations:
-	 *
+	 * 
 	 * <pre>
 	 * int x;
 	 * int y = 1;
 	 * int z = x + y;
 	 * </pre>
-	 *
+	 * 
 	 * Observe that, unlike C and Java, declarations that declare multiple
 	 * variables (separated by commas) are not permitted.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class VariableDeclaration extends SyntacticElement.Impl implements
 			Stmt {
 		private final Type type;
 		private final String name;
-		private Expr expr;
+		private final Expr expr;
 
 		/**
 		 * Construct a variable declaration from a given type, variable name and
 		 * optional initialiser expression.
-		 *
+		 * 
 		 * @param type
 		 *            Type of variable being declared.
 		 * @param name
@@ -954,7 +793,7 @@ public interface Stmt extends SyntacticElement {
 		/**
 		 * Construct a variable declaration from a given type, variable name and
 		 * optional initialiser expression.
-		 *
+		 * 
 		 * @param type
 		 *            Type of variable being declared.
 		 * @param name
@@ -980,8 +819,8 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
-		 * Get the type of the variable being declared.
-		 *
+		 * Get the type of the variable being declared.  
+		 * 
 		 * @return Guaranteed to be non-null.
 		 */
 		public Type getType() {
@@ -989,8 +828,8 @@ public interface Stmt extends SyntacticElement {
 		}
 
 		/**
-		 * Get the name of the variable being declared.
-		 *
+		 * Get the name of the variable being declared.  
+		 * 
 		 * @return Guaranteed to be non-null.
 		 */
 		public String getName() {
@@ -1000,20 +839,11 @@ public interface Stmt extends SyntacticElement {
 		/**
 		 * Get the initialiser expression of the variable being declared (if
 		 * present).
-		 *
+		 * 
 		 * @return May be null.
 		 */
 		public Expr getExpr() {
 			return expr;
-		}
-
-		/**
-		 * Set the optional return value.
-		 *
-		 * @return --- May be <code>null</code>.
-		 */
-		public void setExpr(Expr expr) {
-			this.expr = expr;
 		}
 	}
 }

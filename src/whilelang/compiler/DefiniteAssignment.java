@@ -33,9 +33,9 @@ import whilelang.util.Pair;
  * The algorithm for checking this involves a depth-first search through the
  * control-flow graph of the method. Throughout this, a list of the defined
  * variables is maintained.
- *
+ * 
  * @author David J. Pearce
- *
+ * 
  */
 public class DefiniteAssignment {
 	private WhileFile file;
@@ -67,7 +67,7 @@ public class DefiniteAssignment {
 	 * definitely assigned. Furthermore, update the set of definitely assigned
 	 * variables to include any which are definitely assigned at the end of
 	 * these statements.
-	 *
+	 * 
 	 * @param statements
 	 *            The list of statements to check.
 	 * @param environment
@@ -88,7 +88,7 @@ public class DefiniteAssignment {
 	 * Check that all variables used in a given statement are definitely
 	 * assigned. Furthermore, update the set of definitely assigned variables to
 	 * include any which are definitely assigned after this statement.
-	 *
+	 * 
 	 * @param statement
 	 *            The statement to check.
 	 * @param environment
@@ -120,8 +120,6 @@ public class DefiniteAssignment {
 			return check((Stmt.For) stmt, environment);
 		} else if (stmt instanceof Stmt.While) {
 			return check((Stmt.While) stmt, environment);
-		} else if (stmt instanceof Stmt.Do) {
-			return check((Stmt.Do) stmt, environment);
 		} else if (stmt instanceof Stmt.Switch) {
 			return check((Stmt.Switch) stmt, environment);
 		} else {
@@ -132,7 +130,7 @@ public class DefiniteAssignment {
 
 	public ControlFlow check(Stmt.Assert stmt, Defs environment) {
 		check(stmt.getExpr(), environment);
-		return new ControlFlow(environment,null);
+		return new ControlFlow(environment,null);		
 	}
 
 	public ControlFlow check(Stmt.Assign stmt, Defs environment) {
@@ -149,15 +147,15 @@ public class DefiniteAssignment {
 	public ControlFlow check(Stmt.Break stmt, Defs environment) {
 		// Here we just move the current environment into the "break"
 		// control-flow position.
-		return new ControlFlow(null,environment);
+		return new ControlFlow(null,environment);		
 	}
-
+	
 	public ControlFlow check(Stmt.Continue stmt, Defs environment) {
 		// Here we can just treat a continue in the same way as a return
 		// statement. It makes no real difference.
-		return new ControlFlow(null,null);
+		return new ControlFlow(null,null);		
 	}
-
+	
 	public ControlFlow check(Stmt.Print stmt, Defs environment) {
 		check(stmt.getExpr(), environment);
 		return new ControlFlow(environment,null);
@@ -207,20 +205,11 @@ public class DefiniteAssignment {
 		//
 		return new ControlFlow(environment,null);
 	}
-
-	public ControlFlow check(Stmt.Do stmt, Defs environment) {
-		ControlFlow loop = check(stmt.getBody(), environment);
-		Defs defs = join(loop.nextEnvironment, loop.breakEnvironment);
-		//
-		check(stmt.getCondition(), defs);
-		//
-		return new ControlFlow(defs, null);
-	}
-
+	
 	public ControlFlow check(Stmt.Switch stmt, Defs environment) {
 		Defs nextEnvironment = environment;
 		Defs breakEnvironment = null;
-
+		
 		check(stmt.getExpr(), environment);
 		for(Stmt.Case c : stmt.getCases()) {
 			ControlFlow cf = check(c.getBody(), environment);
@@ -237,7 +226,7 @@ public class DefiniteAssignment {
 	/**
 	 * Check that all variables used in a given expression are definitely
 	 * assigned.
-	 *
+	 * 
 	 * @param expr
 	 *            The expression to check.
 	 * @param environment
@@ -320,30 +309,30 @@ public class DefiniteAssignment {
 			syntaxError("variable " + expr.getName() + " is not definitely assigned", file.filename, expr);
 		}
 	}
-
+	
 	private class ControlFlow {
 		/**
 		 * The set of definitely assigned variables on this path which fall
 		 * through to the next logical statement.
 		 */
 		public final Defs nextEnvironment;
-
+		
 		/**
 		 * The set of definitely assigned variables on this path which are on
 		 * the control-flow path caused by a break statement.
 		 */
-		public final Defs breakEnvironment;
-
+		public final Defs breakEnvironment;		
+		
 		public ControlFlow(Defs nextEnvironment, Defs breakEnvironment) {
 			this.nextEnvironment = nextEnvironment;
 			this.breakEnvironment = breakEnvironment;
 		}
-
+		
 		public ControlFlow merge(ControlFlow other) {
 			Defs n = join(nextEnvironment,other.nextEnvironment);
 			Defs b = join(breakEnvironment,other.breakEnvironment);
 			return new ControlFlow(n,b);
-		}
+		}			
 	}
 
 	private static Defs join(Defs left, Defs right) {
@@ -357,11 +346,11 @@ public class DefiniteAssignment {
 			return left.join(right);
 		}
 	}
-
+	
 	/**
 	 * A simple class representing an immutable set of definitely assigned
 	 * variables.
-	 *
+	 * 
 	 * @author David J. Pearce
 	 *
 	 */
@@ -383,7 +372,7 @@ public class DefiniteAssignment {
 		/**
 		 * Add a variable to the set of definitely assigned variables, producing
 		 * an updated set.
-		 *
+		 * 
 		 * @param var
 		 * @return
 		 */
@@ -396,7 +385,7 @@ public class DefiniteAssignment {
 		/**
 		 * Remove a variable from the set of definitely assigned variables, producing
 		 * an updated set.
-		 *
+		 * 
 		 * @param var
 		 * @return
 		 */
@@ -405,11 +394,11 @@ public class DefiniteAssignment {
 			r.variables.remove(var);
 			return r;
 		}
-
+		
 		/**
 		 * Join two sets together, where the result contains a variable only if
 		 * it is definitely assigned on both branches.
-		 *
+		 * 
 		 * @param other
 		 * @return
 		 */
@@ -422,7 +411,7 @@ public class DefiniteAssignment {
 			}
 			return r;
 		}
-
+		
 		/**
 		 * Useful for debugging
 		 */

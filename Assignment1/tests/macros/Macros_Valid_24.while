@@ -1,0 +1,9 @@
+macro ONE() is 1
+
+int f() {
+    return ONE();
+}
+
+void main() {
+    assert f() == 1;
+}

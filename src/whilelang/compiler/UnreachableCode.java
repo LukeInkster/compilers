@@ -32,7 +32,7 @@ import whilelang.util.SyntacticElement;
  * Responsible for checking that all statements are potentially reachable.
  * Statements which can be shown as definitely unreachable are reported as an
  * error.
- *
+ * 
  * @author David J. Pearce
  *
  */
@@ -58,7 +58,7 @@ public class UnreachableCode {
 	 * Check that all statements in a given list of statements are reachable,
 	 * and return whether or not control will fall through from the end of this
 	 * block.
-	 *
+	 * 
 	 * @param statements
 	 *            The list of statements to check.
 	 */
@@ -73,10 +73,10 @@ public class UnreachableCode {
 		}
 		return fallThru;
 	}
-
+	
 	/**
 	 * Check that all statements contained in a given statement are reachable.
-	 *
+	 * 
 	 * @param stmt
 	 * @return
 	 */
@@ -88,7 +88,7 @@ public class UnreachableCode {
 				stmt instanceof Expr.Invoke) {
 			// These are all the easy cases!
 			return ControlFlow.NEXT;
-		} else if (stmt instanceof Stmt.Continue ||
+		} else if (stmt instanceof Stmt.Continue || 
 				   stmt instanceof Stmt.Return) {
 			// Also easy cases
 			return ControlFlow.RETURN;
@@ -101,8 +101,6 @@ public class UnreachableCode {
 			return check((Stmt.For) stmt);
 		} else if (stmt instanceof Stmt.While) {
 			return check((Stmt.While) stmt);
-		} else if (stmt instanceof Stmt.Do) {
-			return check((Stmt.Do) stmt);
 		} else if (stmt instanceof Stmt.Switch) {
 			return check((Stmt.Switch) stmt);
 		} else {
@@ -110,17 +108,17 @@ public class UnreachableCode {
 			return null; // deadcode (ah, the irony)
 		}
 	}
-
+	
 	public ControlFlow check(Stmt.IfElse stmt) {
 		ControlFlow t = check(stmt.getTrueBranch());
 		ControlFlow f = check(stmt.getFalseBranch());
 		return join(t,f, stmt);
 	}
-
+	
 	public ControlFlow check(Stmt.Switch stmt) {
 		boolean fallThru = true;
 		boolean hasBreak = false;
-
+		
 		// This algorithm is a bit tricky, and it does assume that default can
 		// only come last.  It's possible there are still some bugs in here...
 		for (Stmt.Case c : stmt.getCases()) {
@@ -130,34 +128,29 @@ public class UnreachableCode {
 			}
 			if (c.isDefault() && r == ControlFlow.RETURN) {
 				fallThru = false;
-			}
+			} 
 		}
-
+		
 		if(fallThru || hasBreak) {
 			return ControlFlow.NEXT;
 		} else {
 			return ControlFlow.RETURN;
 		}
 	}
-
+	
 	public ControlFlow check(Stmt.For stmt) {
 		check(stmt.getBody());
 		return ControlFlow.NEXT;
 	}
-
+	
 	public ControlFlow check(Stmt.While stmt) {
 		check(stmt.getBody());
-		return ControlFlow.NEXT;
+		return ControlFlow.NEXT;		
 	}
-
-	public ControlFlow check(Stmt.Do stmt) {
-		check(stmt.getBody());
-		return ControlFlow.NEXT;
-	}
-
+	
 	/**
 	 * Soundly combine two control flow markers together.
-	 *
+	 * 
 	 * @param left
 	 * @param right
 	 * @return
@@ -182,6 +175,6 @@ public class UnreachableCode {
 			return null; // deadcode
 		}
 	}
-
+	
 	private enum ControlFlow { NEXT, RETURN, BREAK, BREAKNEXT };
 }

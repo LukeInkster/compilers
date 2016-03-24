@@ -21,7 +21,6 @@ package whilelang.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import whilelang.ast.Attribute.Source;
 import whilelang.util.SyntacticElement;
 
 public class WhileFile {
@@ -110,36 +109,6 @@ public class WhileFile {
 		}
 	}
 
-	public final static class MacroDecl extends SyntacticElement.Impl implements Decl {
-
-		private final String name;
-		private final ArrayList<MacroParameter> parameters;
-		private final Expr expr;
-
-		public MacroDecl(String name, List<MacroParameter> parameters, Expr expr, Attribute... attributes) {
-			super(attributes);
-			this.name = name;
-			this.parameters = new ArrayList<MacroParameter>(parameters);
-			this.expr = expr;
-		}
-
-		public String name() {
-			return getName();
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public List<MacroParameter> getParameters() {
-			return parameters;
-		}
-
-		public Expr getExpr() {
-			return expr;
-		}
-	}
-
 	public final static class MethodDecl extends SyntacticElement.Impl implements Decl {
 
 		private final String name;
@@ -149,7 +118,7 @@ public class WhileFile {
 
 		/**
 		 * Construct an object representing a Whiley function.
-		 *
+		 * 
 		 * @param name
 		 *            - The name of the function.
 		 * @param ret
@@ -207,22 +176,6 @@ public class WhileFile {
 
 		public Type getType() {
 			return type;
-		}
-
-		public String getName() {
-			return name;
-		}
-	}
-
-	public static final class MacroParameter extends SyntacticElement.Impl implements Decl {
-		private final String name;
-
-		public MacroParameter(String name) {
-			this.name = name;
-		}
-
-		public String name() {
-			return getName();
 		}
 
 		public String getName() {

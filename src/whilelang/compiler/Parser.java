@@ -36,20 +36,18 @@ public class Parser {
 	private String filename;
 	private ArrayList<Token> tokens;
 	private HashSet<String> userDefinedTypes;
-	private HashSet<String> userDefinedMacros;
 	private int index;
 
 	public Parser(String filename, List<Token> tokens) {
 		this.filename = filename;
 		this.tokens = new ArrayList<Token>(tokens);
 		this.userDefinedTypes = new HashSet<String>();
-		this.userDefinedMacros = new HashSet<String>();
 	}
 
 	/**
 	 * Parse a given source file to produce its Abstract Syntax Tree
 	 * representation.
-	 *
+	 * 
 	 * @return
 	 */
 	public WhileFile read() {
@@ -61,8 +59,6 @@ public class Parser {
 				Keyword k = (Keyword) t;
 				if (t.text.equals("type")) {
 					decls.add(parseTypeDeclaration());
-				} else if (t.text.equals("macro")){
-					decls.add(parseMacroDeclaration());
 				} else {
 					decls.add(parseMethodDeclaration());
 				}
@@ -76,11 +72,11 @@ public class Parser {
 
 	/**
 	 * Parse a type declaration of the following form:
-	 *
+	 * 
 	 * <pre>
 	 * TypeDecl ::= 'type' Ident 'is' Type
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Decl parseTypeDeclaration() {
@@ -98,50 +94,14 @@ public class Parser {
 	}
 
 	/**
-	 * Parse a macro declaration of the following form:
-	 *
-	 * <pre>
-	 * MacroDecl ::= "macro" Ident "(" MacroParameters ")" is Expr
-	 * </pre>
-	 *
-	 * @return
-	 */
-	private Decl parseMacroDeclaration() {
-		int start = index;
-		matchKeyword("macro");
-
-		Identifier name = matchIdentifier();
-		match("(");
-
-		List<MacroParameter> params = new ArrayList<MacroParameter>();
-		boolean firstTime = true;
-		while (index < tokens.size() && !(tokens.get(index) instanceof RightBrace)) {
-			if (!firstTime) {
-				match(",");
-			}
-			firstTime = false;
-			Identifier parameterName = matchIdentifier();
-			params.add(new MacroParameter(parameterName.text));
-		}
-
-		match(")");
-		matchKeyword("is");
-
-		Expr expr = parseExpr();
-		int end = index;
-		userDefinedMacros.add(name.text);
-		return new MacroDecl(name.text, params, expr, sourceAttr(start, end - 1));
-	}
-
-	/**
 	 * Parse a method declaration, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * MethodDecl ::= Type Ident '(' Parameters ')' '{' Stmt* '}'
-	 *
+	 * 
 	 * Parameters ::= [Type Ident (',' Type Ident)* ]
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private WhileFile.MethodDecl parseMethodDeclaration() {
@@ -168,16 +128,16 @@ public class Parser {
 
 		match(")");
 		List<Stmt> stmts = parseStatementBlock();
-		return new MethodDecl(name.text, returnType, paramTypes, stmts, sourceAttr(start, index - 1));
+		return new WhileFile.MethodDecl(name.text, returnType, paramTypes, stmts, sourceAttr(start, index - 1));
 	}
 
 	/**
 	 * Parse a block of zero or more statements, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * StmtBlock ::= '{' Stmt* '}'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private List<Stmt> parseStatementBlock() {
@@ -195,7 +155,7 @@ public class Parser {
 
 	/**
 	 * Parse a given statement.
-	 *
+	 * 
 	 * @param withSemiColon
 	 *            Indicates whether to match semi-colons after the statement
 	 *            (where appropriate). This is useful as in some very special
@@ -225,8 +185,6 @@ public class Parser {
 			stmt = parseIfStmt();
 		} else if (token.text.equals("while")) {
 			stmt = parseWhileStmt();
-		} else if (token.text.equals("do")) {
-			stmt = parseDoStmt();
 		} else if (token.text.equals("for")) {
 			stmt = parseForStmt();
 		} else if (token.text.equals("switch")) {
@@ -269,7 +227,7 @@ public class Parser {
 	 * Check whether there is a type starting at the given index. This is useful
 	 * for distinguishing variable declarations from invocations and
 	 * assignments.
-	 *
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -295,11 +253,11 @@ public class Parser {
 
 	/**
 	 * Parse an assert statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * AssertStmt ::= 'assert'  Expr ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.Assert parseAssertStmt() {
@@ -313,15 +271,15 @@ public class Parser {
 
 	/**
 	 * Parse an assignment statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * AssignStmt ::= LVal '=' Expr ';'
-	 *
+	 * 
 	 * LVal ::= Ident
 	 *       | LVal '.' Ident
 	 *       | LVal '[' Expr ']'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseAssignStmt() {
@@ -339,11 +297,11 @@ public class Parser {
 
 	/**
 	 * Parse a print statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * PrintStmt ::= 'print' Expr ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.Print parsePrintStmt() {
@@ -357,11 +315,11 @@ public class Parser {
 
 	/**
 	 * Parse a variable declaration, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * VarDecl ::= Type Ident [ '=' Expr ] ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.VariableDeclaration parseVariableDeclaration() {
@@ -383,15 +341,15 @@ public class Parser {
 
 	/**
 	 * Parse an if statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * IfStmt ::= 'if' '(' Expr ')' StmtBlock ElseIf* [Else]
-	 *
+	 * 
 	 * ElseIf ::= 'else' 'if' '(' Expr ')' StmtBlock
-	 *
+	 * 
 	 * Else ::= 'else' StmtBlock
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseIfStmt() {
@@ -421,11 +379,11 @@ public class Parser {
 
 	/**
 	 * Parse a return statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * ReturnStmt ::= 'return' [ Expr ] ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.Return parseReturnStmt() {
@@ -443,11 +401,11 @@ public class Parser {
 
 	/**
 	 * Parse a While statement of the form:
-	 *
+	 * 
 	 * <pre>
 	 * WhileStmt ::= 'while' '(' Expr ')' StmtBlock
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseWhileStmt() {
@@ -462,34 +420,12 @@ public class Parser {
 	}
 
 	/**
-	 * Parse a Do statement of the form:
-	 *
-	 * <pre>
-	 * DoStmt ::= 'do' StmtBlock 'while' '(' Expr ')' ';'
-	 * </pre>
-	 *
-	 * @return
-	 */
-	private Stmt parseDoStmt() {
-		int start = index;
-		matchKeyword("do");
-		List<Stmt> blk = parseStatementBlock();
-		matchKeyword("while");
-		match("(");
-		Expr condition = parseExpr();
-		match(")");
-		match(";");
-		int end = index;
-		return new Stmt.Do(condition, blk, sourceAttr(start, end - 1));
-	}
-
-	/**
 	 * Parse a for statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * ForStmt ::=
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseForStmt() {
@@ -510,15 +446,15 @@ public class Parser {
 
 	/**
 	 * Parse a Switch statement of the form:
-	 *
+	 * 
 	 * <pre>
 	 * SwitchStmt ::= 'switch' '(' Expr ')' '{' CaseBlock+ [DefaultBlock] '}'
-	 *
+	 * 
 	 * CaseBlock ::= 'case' Expr ':' Stmt*
-	 *
+	 * 
 	 * DefaultBlock ::= 'default' ':' Stmt*
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseSwitchStmt() {
@@ -540,7 +476,7 @@ public class Parser {
 		matchKeyword("break");
 		return new Stmt.Break(sourceAttr(start, index - 1));
 	}
-
+	
 	private Stmt parseContinueStmt() {
 		int start = index;
 		matchKeyword("continue");
@@ -549,15 +485,15 @@ public class Parser {
 	/**
 	 * Parse the list of zero or more case blocks which make up a switch
 	 * statement.
-	 *
+	 * 
 	 * @return
 	 */
 	private List<Stmt.Case> parseSwitchCases() {
-		ArrayList<Stmt.Case> cases = new ArrayList<Stmt.Case>();
+		ArrayList<Stmt.Case> cases = new ArrayList<Stmt.Case>(); 
 		while(index < tokens.size() && !(tokens.get(index) instanceof RightCurly)) {
 			int start = index;
 			Expr.Constant value;
-			Token lookahead = tokens.get(index);
+			Token lookahead = tokens.get(index);			
 			if(lookahead.text.equals("case")) {
 				// This is a case block
 				matchKeyword("case");
@@ -568,7 +504,7 @@ public class Parser {
 				matchKeyword("default");
 				match(":");
 				value = null;
-			}
+			} 
 			int end = index;
 			// Parse the case body
 			ArrayList<Stmt> body = new ArrayList<Stmt>();
@@ -578,7 +514,7 @@ public class Parser {
 			}
 			cases.add(new Stmt.Case(value, body, sourceAttr(start,end-1)));
 		}
-		return cases;
+		return cases; 
 	}
 
 	private Expr.Constant parseConstant() {
@@ -586,7 +522,7 @@ public class Parser {
 		Object constant = parseConstant(e);
 		return new Expr.Constant(constant,e.attributes());
 	}
-
+	
 	private Object parseConstant(Expr e) {
 		if(e instanceof Expr.Constant) {
 			return ((Expr.Constant) e).getValue();
@@ -596,7 +532,7 @@ public class Parser {
 			for(Expr element : ai.getArguments()) {
 				vals.add(parseConstant(element));
 			}
-			return vals;
+			return vals;			
 		} else if(e instanceof Expr.RecordConstructor) {
 			Expr.RecordConstructor rc = (Expr.RecordConstructor) e;
 			HashMap<String,Object> vals = new HashMap<String,Object>();
@@ -608,9 +544,9 @@ public class Parser {
 			// Problem
 			syntaxError("constant expression expected", e);
 			return null;
-		}
+		}				
 	}
-
+	
 	private Expr parseExpr() {
 		checkNotEof();
 		int start = index;
@@ -913,7 +849,7 @@ public class Parser {
 	/**
 	 * Parse a "base" type. That is any type which could be the element of an
 	 * array type.
-	 *
+	 * 
 	 * @return
 	 */
 	private Type parseBaseType() {
@@ -945,13 +881,13 @@ public class Parser {
 
 	/**
 	 * Parse a record type, which takes the form:
-	 *
+	 * 
 	 * <pre>
 	 * RecordType ::= '{' Type Indent ( ',' Type Indent )* '}'
 	 * </pre>
-	 *
+	 * 
 	 * This function additionally checks that no two fields have the same name.
-	 *
+	 * 
 	 * @return
 	 */
 	private Type.Record parseRecordType() {
@@ -960,7 +896,7 @@ public class Parser {
 		// The fields set tracks the field names we've already seen
 		HashSet<String> fields = new HashSet<String>();
 		ArrayList<Pair<Type,String>> types = new ArrayList<Pair<Type,String>>();
-
+		
 		Token token = tokens.get(index);
 		boolean firstTime = true;
 		while (!(token instanceof RightCurly)) {
@@ -969,7 +905,7 @@ public class Parser {
 			}
 			firstTime = false;
 			checkNotEof();
-
+			
 			token = tokens.get(index);
 			Type type = parseType();
 			Identifier n = matchIdentifier();

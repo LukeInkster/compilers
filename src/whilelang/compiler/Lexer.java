@@ -32,9 +32,9 @@ import whilelang.util.SyntaxError;
 
 /**
  * Responsible for turning a stream of characters into a sequence of tokens.
- *
+ * 
  * @author Daivd J. Pearce
- *
+ * 
  */
 public class Lexer {
 
@@ -67,7 +67,7 @@ public class Lexer {
 	/**
 	 * Scan all characters from the input stream and generate a corresponding
 	 * list of tokens, whilst discarding all whitespace and comments.
-	 *
+	 * 
 	 * @return
 	 */
 	public List<Token> scan() {
@@ -104,7 +104,7 @@ public class Lexer {
 	/**
 	 * Scan a numeric constant. That is a sequence of digits which gives an
 	 * integer constant.
-	 *
+	 * 
 	 * @return
 	 */
 	public Token scanNumericConstant() {
@@ -121,7 +121,7 @@ public class Lexer {
 	 * taken to properly handle escape codes. For example, '\n' is a single
 	 * character constant which is made up from two characters in the input
 	 * string.
-	 *
+	 * 
 	 * @return
 	 */
 	public Token scanCharacterConstant() {
@@ -234,7 +234,7 @@ public class Lexer {
 	public Token scanOperator() {
 		char c = input.charAt(pos);
 
-		if (c == '.') {
+		if (c == '.') {			
 			return new Dot(pos++);
 		} else if (c == ',') {
 			return new Comma(pos++);
@@ -261,9 +261,9 @@ public class Lexer {
 			return new LeftCurly(pos++);
 		} else if (c == '}') {
 			return new RightCurly(pos++);
-		} else if (c == '+') {
+		} else if (c == '+') {			
 			return new Plus(pos++);
-		} else if (c == '-') {
+		} else if (c == '-') {			
 			return new Minus(pos++);
 		} else if (c == '*') {
 			return new Star(pos++);
@@ -271,9 +271,9 @@ public class Lexer {
 				&& input.charAt(pos + 1) == '&') {
 			pos += 2;
 			return new LogicalAnd("&&", pos - 2);
-		} else if (c == '/') {
+		} else if (c == '/') {			
 			return new RightSlash(pos++);
-		} else if (c == '%') {
+		} else if (c == '%') {			
 			return new Percent(pos++);
 		} else if (c == '!') {
 			if ((pos + 1) < input.length() && input.charAt(pos + 1) == '=') {
@@ -303,14 +303,14 @@ public class Lexer {
 			} else {
 				return new RightAngle(pos++);
 			}
-		}
+		} 
 
 		syntaxError("unknown operator encountered: " + c);
 		return null;
 	}
 
 	public static final String[] keywords = { "true", "false", "void", "int", "char", "string", "bool", "if",
-			"switch", "case", "default", "break","continue","while", "do", "else", "is", "for", "assert", "print", "return", "type", "macro" };
+			"switch", "case", "default", "break","continue","while", "else", "is", "for", "assert", "print", "return", "type" };
 
 	public Token scanIdentifier() {
 		int start = pos;
@@ -330,7 +330,7 @@ public class Lexer {
 		// otherwise, must be identifier
 		return new Identifier(text, start);
 	}
-
+	
 	public void scanLineComment() {
 		int start = pos;
 		while (pos < input.length() && input.charAt(pos) != '\n') {
@@ -345,13 +345,13 @@ public class Lexer {
 		}
 		pos++;
 		pos++;
-
+		
 	}
-
+	
 	/**
 	 * Skip over any whitespace at the current index position in the input
 	 * string.
-	 *
+	 * 
 	 * @param tokens
 	 */
 	public void skipWhitespace() {
@@ -363,7 +363,7 @@ public class Lexer {
 
 	/**
 	 * Raise a syntax error with a given message at given index.
-	 *
+	 * 
 	 * @param msg
 	 *            --- message to raise.
 	 * @param index
@@ -375,7 +375,7 @@ public class Lexer {
 
 	/**
 	 * Raise a syntax error with a given message at the current index.
-	 *
+	 * 
 	 * @param msg
 	 * @param index
 	 */
@@ -385,9 +385,9 @@ public class Lexer {
 
 	/**
 	 * The base class for all tokens.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static abstract class Token {
 
@@ -406,9 +406,9 @@ public class Lexer {
 
 	/**
 	 * Represents an integer constant. That is, a sequence of 1 or more digits.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static class Int extends Token {
 
@@ -423,9 +423,9 @@ public class Lexer {
 	/**
 	 * Represents a character constant. That is, a single digit enclosed in
 	 * single quotes.  E.g. 'c'
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static class Char extends Token {
 
@@ -441,9 +441,9 @@ public class Lexer {
 	 * Represents a variable or function name. That is, a alphabetic character
 	 * (or '_'), followed by a sequence of zero or more alpha-numeric
 	 * characters.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static class Identifier extends Token {
 
@@ -455,9 +455,9 @@ public class Lexer {
 	/**
 	 * Represents a sequence of zero or more characters which are enclosed in
 	 * double quotes. E.g. "This is a String"
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static class Strung extends Token {
 
@@ -472,9 +472,9 @@ public class Lexer {
 	/**
 	 * Represents a known keyword. In essence, a keyword is a sequence of one or
 	 * more alphabetic characters which is defined in advance.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static class Keyword extends Token {
 
@@ -501,7 +501,7 @@ public class Lexer {
 			super(":", pos);
 		}
 	}
-
+	
 	public static class Bar extends Token {
 		public Bar(int pos) {
 			super("|", pos);
@@ -569,7 +569,7 @@ public class Lexer {
 			super("++", pos);
 		}
 	}
-
+	
 	public static class Plus extends Token {
 		public Plus(int pos) {
 			super("+", pos);
@@ -595,7 +595,7 @@ public class Lexer {
 			super("\\", pos);
 		}
 	}
-
+	
 	public static class RightSlash extends Token {
 
 		public RightSlash(int pos) {
