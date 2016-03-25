@@ -18,21 +18,21 @@ import whilelang.util.Interpreter;
 @RunWith(Parameterized.class)
 public class NullTests {
 private static final String WHILE_SRC_DIR = "tests/null/".replace('/', File.separatorChar);
-	
+
 	private final String testName;
-	
+
 	public NullTests(String testName) {
 		this.testName = testName;
 	}
-	
+
 	/**
 	 * Run the compiler over the test case. If it's an invalid test, then we
 	 * expect it to fail. Otherwise, we expect it to pass.
-	 * 
+	 *
 	 * @param filename
 	 * @throws IOException
 	 */
-	private void runTest(String testname) throws IOException {			
+	private void runTest(String testname) throws IOException {
 		if(testname.contains("Valid")) {
 			compileAndRun(testname);
 		} else {
@@ -44,18 +44,18 @@ private static final String WHILE_SRC_DIR = "tests/null/".replace('/', File.sepa
 			}
 		}
 	}
-	
+
 	private void compileAndRun(String testname) throws IOException {
 		File srcFile = new File(WHILE_SRC_DIR + testname + ".while");
 		WhileCompiler compiler = new WhileCompiler(srcFile.getPath());
 		WhileFile ast = compiler.compile();
 		new Interpreter().run(ast);
 	}
-			
+
 	// ===============================================================
 	// Test Harness
 	// ===============================================================
-	
+
 	// Here we enumerate all available test cases.
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
