@@ -532,7 +532,19 @@ public class TypeChecker {
 	 *            Used for determining where to report syntax errors.
 	 */
 	public boolean isSubtype(Type t1, Type t2, SyntacticElement element) {
-		if (t2 instanceof Type.Void) {
+		if (t2 instanceof Type.Union){
+			Type.Union union2 = (Type.Union) t2;
+			for (Type child2 : union2.getFields()){
+				if (!isSubtype(t1, child2, element)) return false;
+			}
+			return true;
+		} else if (t1 instanceof Type.Union){
+			Type.Union union1 = (Type.Union) t1;
+			for (Type child1 : union1.getFields()){
+				if (isSubtype(child1, t2, element))	return true;
+			}
+			return false;
+		} else if (t2 instanceof Type.Void) {
 			// OK
 			return true;
 		} else if (t1 instanceof Type.Bool && t2 instanceof Type.Bool) {
