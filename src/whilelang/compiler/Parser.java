@@ -25,6 +25,7 @@ import whilelang.ast.Attribute;
 import whilelang.ast.Expr;
 import whilelang.ast.Stmt;
 import whilelang.ast.Type;
+import whilelang.ast.Type.Record;
 import whilelang.ast.WhileFile;
 import whilelang.ast.WhileFile.*;
 import whilelang.compiler.Lexer.*;
@@ -887,11 +888,71 @@ public class Parser {
 			return new Type.Null(sourceAttr(start, index - 1));
 		} else if (token instanceof LeftCurly) {
 			// record type
-			return parseRecordType();
+			return normalise(parseRecordType());
 		} else {
 			Identifier id = matchIdentifier();
 			return new Type.Named(id.text, sourceAttr(start, index - 1));
 		}
+	}
+
+	private Type normalise(Record record) {
+//		List<Pair<Type, String>> split1 = new ArrayList<Pair<Type, String>>();
+//		List<Pair<Type, String>> split2 = new ArrayList<Pair<Type, String>>();
+//		int field;
+//		for (field = 0; field < record.getFields().size(); field++){
+//			Pair<Type, String> t = record.getFields().get(field);
+//			// General case
+//			if (!(t.first() instanceof Type.Union)){
+//				split1.add(t);
+//				split2.add(t);
+//				continue;
+//			}
+//			// Union type
+//			Type.Union u = (Type.Union)t.first();
+//			split1.add(t.withFirst(u.getTypes().get(0)));
+//			split2.add(t.withFirst(u.getTypes().get(1)));
+//			for (field = field + 1; field < record.getFields().size(); field++){
+//				split1.add(record.getFields().get(field));
+//				split2.add(record.getFields().get(field));
+//			}
+//			Type.Record r1 = new Type.Record(split1, asArray(record.attributes()));
+//			Type.Record r2 = new Type.Record(split2, asArray(record.attributes()));
+//			List<Type> union = new ArrayList<Type>();
+//			union.add(r1);
+//			union.add(r2);
+//			return new Type.Union(union, asArray(record.attributes()));
+//		}
+		return record;
+
+
+
+//		List<Pair<Type, String>> normalizedFields = new ArrayList<Pair<Type, String>>();
+//		int field;
+//		for (field = 0; field < record.getFields().size(); field++){
+//			Pair<Type, String> t = record.getFields().get(field);
+//			if (t.first() instanceof Type.Union){
+//				Record r1 = record.clone();
+//				Record r2 = record.clone();
+//				for (int i=0; i<r1.getFields().size(); i++){
+//					Pair<Type, String> t1 = r1.getFields().get(i);
+//					if (t1.equals(t)){
+//
+//					}
+//				}
+//				List<Type> unionTypes = new ArrayList<Type>();
+//				unionTypes.add(r1);
+//				unionTypes.add(r2);
+//				normalizedFields.add(t.withFirst(new Type.Union(unionTypes, asArray(record.attributes()))));
+//
+//			}
+//			normalizedFields.add(t);
+//		}
+//		return record;
+	}
+
+	private Attribute[] asArray(List<Attribute> attributes) {
+		Attribute[] attrs = new Attribute[attributes.size()];
+		return attributes.toArray(attrs);
 	}
 
 	/**

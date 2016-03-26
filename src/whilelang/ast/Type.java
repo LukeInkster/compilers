@@ -256,6 +256,11 @@ public interface Type extends SyntacticElement {
 
 			return "{" + r + "}";
 		}
+
+		public Record clone(){
+			Attribute[] attrs = new Attribute[attributes().size()];
+			return new Record(new ArrayList<Pair<Type, String>>(fields), attrs);
+		}
 	}
 
 	/**

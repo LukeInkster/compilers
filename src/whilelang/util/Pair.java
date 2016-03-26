@@ -20,9 +20,9 @@ package whilelang.util;
 
 /**
  * This class represents a pair of items.
- * 
+ *
  * @author David Pearce
- * 
+ *
  * @param <FIRST> Type of first item.
  * @param <SECOND> Type of second item.
  */
@@ -42,6 +42,14 @@ public class Pair<FIRST, SECOND> {
 
   public SECOND second() {
     return second;
+  }
+
+  public Pair<FIRST, SECOND> withSecond(SECOND second){
+	return new Pair<FIRST, SECOND>(first, second);
+  }
+
+  public Pair<FIRST, SECOND> withFirst(FIRST first){
+	return new Pair<FIRST, SECOND>(first, second);
   }
 
   public int hashCode() {
