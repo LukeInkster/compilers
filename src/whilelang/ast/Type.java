@@ -276,7 +276,7 @@ public interface Type extends SyntacticElement {
 			}
 		}
 
-		public List<Type> getFields() {
+		public List<Type> getTypes() {
 			return types;
 		}
 
