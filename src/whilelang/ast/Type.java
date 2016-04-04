@@ -243,6 +243,10 @@ public interface Type extends SyntacticElement {
 			return fields;
 		}
 
+		public Pair<Type,String> getField(int index) {
+			return fields.get(index);
+		}
+
 		public String toString() {
 			String r = "";
 

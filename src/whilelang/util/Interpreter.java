@@ -299,6 +299,8 @@ public class Interpreter {
 			return execute((Expr.Unary) expr,frame);
 		} else if(expr instanceof Expr.Variable) {
 			return execute((Expr.Variable) expr,frame);
+		} else if(expr instanceof Expr.Cast) {
+			return execute((Expr.Cast) expr,frame);
 		} else {
 			internalFailure("unknown expression encountered (" + expr + ")", file.filename,expr);
 			return null;
@@ -438,6 +440,27 @@ public class Interpreter {
 
 	private Object execute(Expr.Variable expr, HashMap<String,Object> frame) {
 		return frame.get(expr.getName());
+	}
+
+	private Object execute(Expr.Cast expr, HashMap<String,Object> frame) {
+		Type t = expr.getType();
+		if (t instanceof Type.Bool) {
+			return (boolean)execute(expr.getExpr(), frame);
+		} else if (t instanceof Type.Char) {
+			return (char)execute(expr.getExpr(), frame);
+		} else if (t instanceof Type.Int) {
+			return (int)execute(expr.getExpr(), frame);
+		} else if (t instanceof Type.Strung) {
+			return (String)execute(expr.getExpr(), frame);
+		} else if (t instanceof Type.Null) {
+			return execute(expr.getExpr(), frame);
+		} else if (t instanceof Type.Array) {
+			return (ArrayList)execute(expr.getExpr(), frame);
+		} else if (t instanceof Type.Record) {
+			return (HashMap)execute(expr.getExpr(), frame);
+		}
+
+		return execute(expr.getExpr(), frame);
 	}
 
 	/**

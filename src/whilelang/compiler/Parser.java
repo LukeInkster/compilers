@@ -706,10 +706,22 @@ public class Parser {
 
 		if (token instanceof LeftBrace) {
 			match("(");
-			Expr e = parseExpr(context);
-			checkNotEof();
-			match(")");
-			return e;
+			try {
+				// if the next token is a type then make a cast,
+				// otherwise we'll catch the exception below
+				Type t = parseType();
+				checkNotEof();
+				match(")");
+				checkNotEof();
+				Expr e = parseExpr(context);
+				return new Expr.Cast(t, e, sourceAttr(start, index - 1));
+			}
+			catch (Exception ex) {
+				Expr e = parseExpr(context);
+				checkNotEof();
+				match(")");
+				return e;
+			}
 		} else if ((index + 1) < tokens.size() && token instanceof Identifier
 				&& tokens.get(index + 1) instanceof LeftBrace) {
 			// must be a method invocation
@@ -924,6 +936,10 @@ public class Parser {
 	private Type parseBaseType() {
 		int start = index;
 		Token token = tokens.get(index);
+		return typeFromToken(start, token);
+	}
+
+	private Type typeFromToken(int start, Token token) {
 		if (token.text.equals("int")) {
 			matchKeyword("int");
 			return new Type.Int(sourceAttr(start, index - 1));
@@ -950,70 +966,11 @@ public class Parser {
 			if(userDefinedTypes.contains(id.text)) {
 				return new Type.Named(id.text, sourceAttr(start, index - 1));
 			} else {
+				index--; // reverse the increment in matchIdentifier()
 				syntaxError("unknown type " + id.text,id);
 				return null;
 			}
 		}
-	}
-
-	private Type normalise(Record record) {
-//		List<Pair<Type, String>> split1 = new ArrayList<Pair<Type, String>>();
-//		List<Pair<Type, String>> split2 = new ArrayList<Pair<Type, String>>();
-//		int field;
-//		for (field = 0; field < record.getFields().size(); field++){
-//			Pair<Type, String> t = record.getFields().get(field);
-//			// General case
-//			if (!(t.first() instanceof Type.Union)){
-//				split1.add(t);
-//				split2.add(t);
-//				continue;
-//			}
-//			// Union type
-//			Type.Union u = (Type.Union)t.first();
-//			split1.add(t.withFirst(u.getTypes().get(0)));
-//			split2.add(t.withFirst(u.getTypes().get(1)));
-//			for (field = field + 1; field < record.getFields().size(); field++){
-//				split1.add(record.getFields().get(field));
-//				split2.add(record.getFields().get(field));
-//			}
-//			Type.Record r1 = new Type.Record(split1, asArray(record.attributes()));
-//			Type.Record r2 = new Type.Record(split2, asArray(record.attributes()));
-//			List<Type> union = new ArrayList<Type>();
-//			union.add(r1);
-//			union.add(r2);
-//			return new Type.Union(union, asArray(record.attributes()));
-//		}
-		return record;
-
-
-
-//		List<Pair<Type, String>> normalizedFields = new ArrayList<Pair<Type, String>>();
-//		int field;
-//		for (field = 0; field < record.getFields().size(); field++){
-//			Pair<Type, String> t = record.getFields().get(field);
-//			if (t.first() instanceof Type.Union){
-//				Record r1 = record.clone();
-//				Record r2 = record.clone();
-//				for (int i=0; i<r1.getFields().size(); i++){
-//					Pair<Type, String> t1 = r1.getFields().get(i);
-//					if (t1.equals(t)){
-//
-//					}
-//				}
-//				List<Type> unionTypes = new ArrayList<Type>();
-//				unionTypes.add(r1);
-//				unionTypes.add(r2);
-//				normalizedFields.add(t.withFirst(new Type.Union(unionTypes, asArray(record.attributes()))));
-//
-//			}
-//			normalizedFields.add(t);
-//		}
-//		return record;
-	}
-
-	private Attribute[] asArray(List<Attribute> attributes) {
-		Attribute[] attrs = new Attribute[attributes.size()];
-		return attributes.toArray(attrs);
 	}
 
 
