@@ -399,7 +399,8 @@ public class TypeChecker {
 	public Type check(Expr.Cast expr, Map<String, Type> environment) {
 		Type type = expr.getType();
 		Type evalType = check(expr.getExpr(), environment);
-		if (!isSubtype(evalType, type, new SyntacticElement.Impl())){
+		if (!isSubtype(evalType, type, new SyntacticElement.Impl())
+				&& !isSubtype(type, evalType, new SyntacticElement.Impl())){
 			syntaxError("invalid cast: " + evalType + " to " + type, file.filename, expr);
 		}
 		return type;

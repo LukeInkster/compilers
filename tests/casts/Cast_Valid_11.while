@@ -1,0 +1,8 @@
+type T1 is {{int x} y}
+type T2 is {{null x} y}
+type Combo is {{int|null x} y}
+
+void main() {
+	Combo|null a = {y: {x: 1}};
+	T1 b = (T1) a;
+}

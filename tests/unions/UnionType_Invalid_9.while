@@ -1,0 +1,7 @@
+{int f, int g} f({int f} x) {
+    return x;
+}
+
+void main() {
+    {int f} m = {f: 1};
+}

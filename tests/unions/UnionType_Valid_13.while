@@ -1,0 +1,8 @@
+{int f} f({int f, int g} x) {
+    return x;
+}
+
+void main() {
+    {int f, int g} m = {f: 1, g: 2};
+    assert f(m) == {f: 1, g: 2};
+}
