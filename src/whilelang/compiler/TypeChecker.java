@@ -455,8 +455,16 @@ public class TypeChecker {
 		for (Type t : types) {
 			if (isSubtype(t, lub, elem)) {
 				lub = t;
-			} else {
-				checkSubtype(lub, t, elem);
+			} else if (!isSubtype(lub, t, elem)){
+				if (lub instanceof Type.Union){
+					((Type.Union)lub).getTypes().add(t);
+				}
+				else {
+					List<Type> unionTypes = new ArrayList<Type>();
+					unionTypes.add(lub);
+					unionTypes.add(t);
+					lub = new Type.Union(unionTypes, asArray(lub.attributes()));
+				}
 			}
 		}
 		return lub;

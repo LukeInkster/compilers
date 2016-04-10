@@ -1,0 +1,9 @@
+{int x, int y, int z}  upCast({int x, int y, int z, int a} x) {
+	// invalid here
+    return ({int x, int y, int z})x;
+}
+
+void main() {
+    {int x, int y, int z, int a} m = {x: 1, y: 2, z: 3, a: 4};
+    assert upCast(m) == {x: 1, y: 2, z: 3, a: 4};
+}

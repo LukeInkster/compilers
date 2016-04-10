@@ -35,13 +35,19 @@ import static whilelang.util.SyntaxError.*;
  */
 public class Interpreter {
 	private HashMap<String, WhileFile.Decl> declarations;
+	private HashMap<String,WhileFile.TypeDecl> types;
 	private WhileFile file;
 
 	public void run(WhileFile wf) {
 		// First, initialise the map of declaration names to their bodies.
 		declarations = new HashMap<String,WhileFile.Decl>();
+		this.types = new HashMap<String,WhileFile.TypeDecl>();
 		for(WhileFile.Decl decl : wf.declarations) {
 			declarations.put(decl.name(), decl);
+			if (decl instanceof WhileFile.TypeDecl) {
+				WhileFile.TypeDecl fd = (WhileFile.TypeDecl) decl;
+				this.types.put(fd.name(), fd);
+			}
 		}
 		this.file = wf;
 
@@ -413,7 +419,7 @@ public class Interpreter {
 
 	private Object execute(Expr.RecordConstructor expr, HashMap<String,Object> frame) {
 		List<Pair<String,Expr>> es = expr.getFields();
-		HashMap<String,Object> rs = new HashMap<String,Object>();
+		HashMap<String,Object> rs = new LinkedHashMap<String,Object>();
 
 		for(Pair<String,Expr> e : es) {
 			rs.put(e.first(),execute(e.second(),frame));
@@ -444,6 +450,9 @@ public class Interpreter {
 
 	private Object execute(Expr.Cast expr, HashMap<String,Object> frame) {
 		Type t = expr.getType();
+		while (t instanceof Type.Named){
+			t = types.get(((Type.Named)t).getName()).getType();
+		}
 		if (t instanceof Type.Bool) {
 			return (boolean)execute(expr.getExpr(), frame);
 		} else if (t instanceof Type.Char) {
@@ -457,7 +466,20 @@ public class Interpreter {
 		} else if (t instanceof Type.Array) {
 			return (ArrayList)execute(expr.getExpr(), frame);
 		} else if (t instanceof Type.Record) {
-			return (HashMap)execute(expr.getExpr(), frame);
+			Map<String, Object> map = (HashMap)execute(expr.getExpr(), frame);
+			Type.Record r = (Type.Record)t;
+			int i = 0;
+			for (Map.Entry<String, Object> entry : map.entrySet()){
+				if (i >= r.getFields().size()){
+					break;
+				}
+				if (!r.getField(i).second().equals(entry.getKey())){
+					throw new RuntimeException("Cast exception - object field '" + entry.getKey()
+					+ "' does not match type field '" + r.getField(i).second() + "'.");
+				}
+				i++;
+			}
+			return map;
 		}
 
 		return execute(expr.getExpr(), frame);
@@ -483,7 +505,7 @@ public class Interpreter {
 			return n;
 		} else if (o instanceof HashMap) {
 			HashMap<String, Object> m = (HashMap) o;
-			HashMap<String, Object> n = new HashMap<String, Object>();
+			HashMap<String, Object> n = new LinkedHashMap<String, Object>();
 			for (String field : m.keySet()) {
 				n.put(field, deepClone(m.get(field)));
 			}
