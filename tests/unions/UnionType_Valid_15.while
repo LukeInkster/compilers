@@ -1,0 +1,7 @@
+type F is {int f}
+type G is {int f}
+
+void main() {
+    F a = {f: 1};
+    G b = (G)a;
+}
