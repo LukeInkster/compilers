@@ -1,0 +1,11 @@
+type T1 is {{int x} y}
+type T2 is {{null x} y}
+type Combo is {{int|null x} y}
+
+void main() {
+	int|null ion = 42;
+	Combo|null a = {y: {x: ion}};
+	T1 b = (T1) a;
+	
+	assert b.y.x == ion;
+}

@@ -25,7 +25,6 @@ import whilelang.ast.Attribute;
 import whilelang.ast.Expr;
 import whilelang.ast.Stmt;
 import whilelang.ast.Type;
-import whilelang.ast.Type.Record;
 import whilelang.ast.WhileFile;
 import whilelang.ast.WhileFile.*;
 import whilelang.compiler.Lexer.*;
@@ -50,7 +49,7 @@ public class Parser {
 	/**
 	 * Parse a given source file to produce its Abstract Syntax Tree
 	 * representation.
-	 *
+	 * 
 	 * @return
 	 */
 	public WhileFile read() {
@@ -75,11 +74,11 @@ public class Parser {
 
 	/**
 	 * Parse a type declaration of the following form:
-	 *
+	 * 
 	 * <pre>
 	 * TypeDecl ::= 'type' Ident 'is' Type
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Decl parseTypeDeclaration() {
@@ -89,7 +88,7 @@ public class Parser {
 		Identifier name = matchIdentifier();
 		if(userDefinedTypes.contains(name.text)) {
 			syntaxError("type already declared",name);
-		}
+		} 
 		matchKeyword("is");
 
 		Type t = parseType();
@@ -100,13 +99,13 @@ public class Parser {
 
 	/**
 	 * Parse a method declaration, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * MethodDecl ::= Type Ident '(' Parameters ')' '{' Stmt* '}'
-	 *
+	 * 
 	 * Parameters ::= [Type Ident (',' Type Ident)* ]
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private WhileFile.MethodDecl parseMethodDeclaration() {
@@ -116,7 +115,7 @@ public class Parser {
 		Identifier name = matchIdentifier();
 		if(userDefinedMethods.containsKey(name.text)) {
 			syntaxError("method already declared",name);
-		}
+		} 
 
 		Context context = new Context();
 		match("(");
@@ -138,7 +137,7 @@ public class Parser {
 				context.declare(parameterName.text);
 			}
 			parameters.add(new Parameter(parameterType, parameterName.text, sourceAttr(parameterStart, index - 1)));
-
+			
 		}
 
 		match(")");
@@ -150,11 +149,11 @@ public class Parser {
 
 	/**
 	 * Parse a block of zero or more statements, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * StmtBlock ::= '{' Stmt* '}'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private List<Stmt> parseStatementBlock(Context context) {
@@ -172,7 +171,7 @@ public class Parser {
 
 	/**
 	 * Parse a given statement.
-	 *
+	 * 
 	 * @param withSemiColon
 	 *            Indicates whether to match semi-colons after the statement
 	 *            (where appropriate). This is useful as in some very special
@@ -244,7 +243,7 @@ public class Parser {
 	 * Check whether there is a type starting at the given index. This is useful
 	 * for distinguishing variable declarations from invocations and
 	 * assignments.
-	 *
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -270,11 +269,11 @@ public class Parser {
 
 	/**
 	 * Parse an assert statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * AssertStmt ::= 'assert'  Expr ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.Assert parseAssertStmt(Context context) {
@@ -288,15 +287,15 @@ public class Parser {
 
 	/**
 	 * Parse an assignment statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * AssignStmt ::= LVal '=' Expr ';'
-	 *
+	 * 
 	 * LVal ::= Ident
 	 *       | LVal '.' Ident
 	 *       | LVal '[' Expr ']'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseAssignStmt(Context context) {
@@ -314,11 +313,11 @@ public class Parser {
 
 	/**
 	 * Parse a print statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * PrintStmt ::= 'print' Expr ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.Print parsePrintStmt(Context context) {
@@ -332,11 +331,11 @@ public class Parser {
 
 	/**
 	 * Parse a variable declaration, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * VarDecl ::= Type Ident [ '=' Expr ] ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.VariableDeclaration parseVariableDeclaration(Context context) {
@@ -363,15 +362,15 @@ public class Parser {
 
 	/**
 	 * Parse an if statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * IfStmt ::= 'if' '(' Expr ')' StmtBlock ElseIf* [Else]
-	 *
+	 * 
 	 * ElseIf ::= 'else' 'if' '(' Expr ')' StmtBlock
-	 *
+	 * 
 	 * Else ::= 'else' StmtBlock
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseIfStmt(Context context) {
@@ -401,11 +400,11 @@ public class Parser {
 
 	/**
 	 * Parse a return statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * ReturnStmt ::= 'return' [ Expr ] ';'
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt.Return parseReturnStmt(Context context) {
@@ -423,11 +422,11 @@ public class Parser {
 
 	/**
 	 * Parse a While statement of the form:
-	 *
+	 * 
 	 * <pre>
 	 * WhileStmt ::= 'while' '(' Expr ')' StmtBlock
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseWhileStmt(Context context) {
@@ -443,11 +442,11 @@ public class Parser {
 
 	/**
 	 * Parse a for statement, of the form:
-	 *
+	 * 
 	 * <pre>
 	 * ForStmt ::=
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseForStmt(Context context) {
@@ -468,15 +467,15 @@ public class Parser {
 
 	/**
 	 * Parse a Switch statement of the form:
-	 *
+	 * 
 	 * <pre>
 	 * SwitchStmt ::= 'switch' '(' Expr ')' '{' CaseBlock+ [DefaultBlock] '}'
-	 *
+	 * 
 	 * CaseBlock ::= 'case' Expr ':' Stmt*
-	 *
+	 * 
 	 * DefaultBlock ::= 'default' ':' Stmt*
 	 * </pre>
-	 *
+	 * 
 	 * @return
 	 */
 	private Stmt parseSwitchStmt(Context context) {
@@ -501,7 +500,7 @@ public class Parser {
 		}
 		return new Stmt.Break(sourceAttr(start, index - 1));
 	}
-
+	
 	private Stmt parseContinueStmt(Context context) {
 		int start = index;
 		Keyword k = matchKeyword("continue");
@@ -513,17 +512,17 @@ public class Parser {
 	/**
 	 * Parse the list of zero or more case blocks which make up a switch
 	 * statement.
-	 *
+	 * 
 	 * @return
 	 */
 	private List<Stmt.Case> parseSwitchCases(Context context) {
 		ArrayList<Stmt.Case> cases = new ArrayList<Stmt.Case>();
 		HashSet<Object> values = new HashSet<Object>();
-
+		
 		while(index < tokens.size() && !(tokens.get(index) instanceof RightCurly)) {
 			int start = index;
 			Expr.Constant value;
-			Token lookahead = tokens.get(index);
+			Token lookahead = tokens.get(index);			
 			if(lookahead.text.equals("case")) {
 				// This is a case block
 				matchKeyword("case");
@@ -539,7 +538,7 @@ public class Parser {
 				matchKeyword("default");
 				match(":");
 				value = null;
-			}
+			} 
 			int end = index;
 			// Parse the case body
 			ArrayList<Stmt> body = new ArrayList<Stmt>();
@@ -549,7 +548,7 @@ public class Parser {
 			}
 			cases.add(new Stmt.Case(value, body, sourceAttr(start,end-1)));
 		}
-		return cases;
+		return cases; 
 	}
 
 	private Expr.Constant parseConstant() {
@@ -557,7 +556,7 @@ public class Parser {
 		Object constant = parseConstant(e);
 		return new Expr.Constant(constant,e.attributes());
 	}
-
+	
 	private Object parseConstant(Expr e) {
 		if(e instanceof Expr.Constant) {
 			return ((Expr.Constant) e).getValue();
@@ -567,7 +566,7 @@ public class Parser {
 			for(Expr element : ai.getArguments()) {
 				vals.add(parseConstant(element));
 			}
-			return vals;
+			return vals;			
 		} else if(e instanceof Expr.RecordConstructor) {
 			Expr.RecordConstructor rc = (Expr.RecordConstructor) e;
 			HashMap<String,Object> vals = new HashMap<String,Object>();
@@ -579,9 +578,9 @@ public class Parser {
 			// Problem
 			syntaxError("constant expression expected", e);
 			return null;
-		}
+		}				
 	}
-
+	
 	private Expr parseExpr(Context context) {
 		checkNotEof();
 		int start = index;
@@ -706,22 +705,10 @@ public class Parser {
 
 		if (token instanceof LeftBrace) {
 			match("(");
-			try {
-				// if the next token is a type then make a cast,
-				// otherwise we'll catch the exception below
-				Type t = parseType();
-				checkNotEof();
-				match(")");
-				checkNotEof();
-				Expr e = parseExpr(context);
-				return new Expr.Cast(t, e, sourceAttr(start, index - 1));
-			}
-			catch (Exception ex) {
-				Expr e = parseExpr(context);
-				checkNotEof();
-				match(")");
-				return e;
-			}
+			Expr e = parseExpr(context);
+			checkNotEof();
+			match(")");
+			return e;
 		} else if ((index + 1) < tokens.size() && token instanceof Identifier
 				&& tokens.get(index + 1) instanceof LeftBrace) {
 			// must be a method invocation
@@ -736,7 +723,7 @@ public class Parser {
 			matchKeyword("false");
 			return new Expr.Constant(false, sourceAttr(start, index - 1));
 		} else if (token instanceof Identifier) {
-			return parseVariable(context);
+			return parseVariable(context);			
 		} else if (token instanceof Lexer.Char) {
 			char val = match(Lexer.Char.class, "a character").value;
 			return new Expr.Constant(new Character(val), sourceAttr(start, index - 1));
@@ -771,7 +758,7 @@ public class Parser {
 			return null;
 		}
 	}
-
+	
 	private Expr parseArrayInitialiserOrGeneratorExpr(Context context) {
 		int start = index;
 		ArrayList<Expr> exprs = new ArrayList<Expr>();
@@ -883,13 +870,13 @@ public class Parser {
 			args.add(e);
 		}
 		match(")");
-		WhileFile.MethodDecl m = userDefinedMethods.get(name.text);
+		WhileFile.MethodDecl m = userDefinedMethods.get(name.text);		
 		Expr.Invoke invoke = new Expr.Invoke(name.text, args, sourceAttr(start, index - 1));
-
+		
 		if(m.getParameters().size() != args.size()) {
 			syntaxError("incorrect number of arguments provided",invoke);
 		}
-
+		
 		return invoke;
 	}
 
@@ -902,19 +889,6 @@ public class Parser {
 	private Type parseType() {
 		int start = index;
 		checkNotEof();
-		List<Type> types = new ArrayList<Type>();
-		types.add(parseSingleType(start));
-		while (index < tokens.size() && tokens.get(index) instanceof Bar) {
-			match("|");
-			types.add(parseSingleType(start));
-		}
-		// Done
-		return types.size() > 1
-			? new Type.Union(types, sourceAttr(start, index - 1))
-			: types.get(0);
-	}
-
-	private Type parseSingleType(int start) {
 		// Determine base type
 		Type type = parseBaseType();
 		// Determine array level (if any)
@@ -930,16 +904,12 @@ public class Parser {
 	/**
 	 * Parse a "base" type. That is any type which could be the element of an
 	 * array type.
-	 *
+	 * 
 	 * @return
 	 */
 	private Type parseBaseType() {
 		int start = index;
 		Token token = tokens.get(index);
-		return typeFromToken(start, token);
-	}
-
-	private Type typeFromToken(int start, Token token) {
 		if (token.text.equals("int")) {
 			matchKeyword("int");
 			return new Type.Int(sourceAttr(start, index - 1));
@@ -955,9 +925,6 @@ public class Parser {
 		} else if (token.text.equals("string")) {
 			matchKeyword("string");
 			return new Type.Strung(sourceAttr(start, index - 1));
-		} else if (token.text.equals("null")) {
-			matchKeyword("null");
-			return new Type.Null(sourceAttr(start, index - 1));
 		} else if (token instanceof LeftCurly) {
 			// record type
 			return parseRecordType();
@@ -966,23 +933,21 @@ public class Parser {
 			if(userDefinedTypes.contains(id.text)) {
 				return new Type.Named(id.text, sourceAttr(start, index - 1));
 			} else {
-				index--; // reverse the increment in matchIdentifier()
 				syntaxError("unknown type " + id.text,id);
 				return null;
 			}
 		}
 	}
 
-
 	/**
 	 * Parse a record type, which takes the form:
-	 *
+	 * 
 	 * <pre>
 	 * RecordType ::= '{' Type Indent ( ',' Type Indent )* '}'
 	 * </pre>
-	 *
+	 * 
 	 * This function additionally checks that no two fields have the same name.
-	 *
+	 * 
 	 * @return
 	 */
 	private Type.Record parseRecordType() {
@@ -991,7 +956,7 @@ public class Parser {
 		// The fields set tracks the field names we've already seen
 		HashSet<String> fields = new HashSet<String>();
 		ArrayList<Pair<Type,String>> types = new ArrayList<Pair<Type,String>>();
-
+		
 		Token token = tokens.get(index);
 		boolean firstTime = true;
 		while (!(token instanceof RightCurly)) {
@@ -1000,7 +965,7 @@ public class Parser {
 			}
 			firstTime = false;
 			checkNotEof();
-
+			
 			token = tokens.get(index);
 			Type type = parseType();
 			Identifier n = matchIdentifier();
@@ -1084,11 +1049,11 @@ public class Parser {
 	private void syntaxError(String msg, Token t) {
 		throw new SyntaxError(msg, filename, t.start, t.start + t.text.length() - 1);
 	}
-
+	
 	/**
 	 * Provides information about the current context in which the parser is
 	 * operating.
-	 *
+	 * 
 	 * @author David J. Pearce
 	 *
 	 */
@@ -1097,81 +1062,81 @@ public class Parser {
 		 * indicates whether the current context is within a loop or not.
 		 */
 		private final boolean inLoop;
-
+		
 		/**
 		 * indicates whether the current context is within a switch or not.
 		 */
 		private final boolean inSwitch;
-
+		
 		/**
-		 * indicates the set of declared variables within the current context;
+		 * indicates the set of declared variables within the current context; 
 		 */
 		private final Set<String> environment;
-
+		
 		public Context() {
 			this.inLoop = false;
 			this.inSwitch = false;
 			this.environment = new HashSet<String>();
 		}
-
+		
 		private Context(boolean inLoop, boolean inSwitch, Set<String> environment) {
 			this.inLoop = inLoop;
 			this.inSwitch = inSwitch;
 			this.environment = environment;
 		}
-
+		
 		/**
 		 * Check whether the given context is within an enclosing loop or not.
-		 *
+		 * 
 		 * @return
 		 */
 		public boolean inLoop() {
 			return inLoop;
 		}
-
+		
 		/**
 		 * Check whether the given context is within an enclosing switch or not.
-		 *
+		 * 
 		 * @return
 		 */
 		public boolean inSwitch() {
 			return inSwitch;
 		}
-
+		
 		/**
 		 * Check whether a given variable is declared in this context or not.
-		 *
+		 * 
 		 * @param variable
 		 * @return
 		 */
 		public boolean isDeclared(String variable) {
 			return environment.contains(variable);
 		}
-
+		
 		public void declare(String variable) {
 			environment.add(variable);
 		}
-
+		
 		/**
 		 * Create a copy of this context which is enclosed within a loop
 		 * statement.
-		 *
+		 * 
 		 * @return
 		 */
 		public Context setInLoop() {
 			return new Context(true,inSwitch,environment);
 		}
-
+		
 		/**
 		 * Create a copy of this context which is enclosed within a switch
 		 * statement.
-		 *
+		 * 
 		 * @return
 		 */
 		public Context setInSwitch() {
 			return new Context(inLoop,true,environment);
 		}
-
+		
 		/**
 		 * Create a new clone of this context
 		 */

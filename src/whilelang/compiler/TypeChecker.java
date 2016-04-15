@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import whilelang.ast.*;
-import whilelang.ast.Type.Record;
 import whilelang.util.Pair;
 import whilelang.util.SyntacticElement;
 
@@ -38,21 +37,21 @@ import static whilelang.util.SyntaxError.*;
  * that we only perform arithmetic operations on arithmetic types; that we only
  * access fields in records guaranteed to have those fields, etc.
  * </p>
- *
+ * 
  * @author David J. Pearce
- *
+ * 
  */
 public class TypeChecker {
 	private WhileFile file;
 	private WhileFile.MethodDecl method;
 	private HashMap<String,WhileFile.MethodDecl> methods;
-	private HashMap<String,WhileFile.TypeDecl> types;
-
+	private HashMap<String,WhileFile.TypeDecl> types; 
+	
 	public void check(WhileFile wf) {
 		this.file = wf;
 		this.methods = new HashMap<String,WhileFile.MethodDecl>();
 		this.types = new HashMap<String,WhileFile.TypeDecl>();
-
+		
 		for(WhileFile.Decl declaration : wf.declarations) {
 			if(declaration instanceof WhileFile.MethodDecl) {
 				WhileFile.MethodDecl fd = (WhileFile.MethodDecl) declaration;
@@ -62,7 +61,7 @@ public class TypeChecker {
 				this.types.put(fd.name(), fd);
 			}
 		}
-
+		
 		for(WhileFile.Decl declaration : wf.declarations) {
 			if(declaration instanceof WhileFile.TypeDecl) {
 				check((WhileFile.TypeDecl) declaration);
@@ -71,32 +70,32 @@ public class TypeChecker {
 			}
 		}
 	}
-
+	
 	public void check(WhileFile.TypeDecl td) {
 		checkNotVoid(td.getType(),td.getType());
 	}
-
+	
 	public void check(WhileFile.MethodDecl fd) {
 		this.method = fd;
-
+		
 		// First, initialise the typing environment
 		HashMap<String,Type> environment = new HashMap<String,Type>();
 		for (WhileFile.Parameter p : fd.getParameters()) {
 			checkNotVoid(p.getType(),p);
 			environment.put(p.name(), p.getType());
 		}
-
+		
 		// Second, check all statements in the function body
-		check(fd.getBody(),environment);
+		check(fd.getBody(),environment);				
 	}
-
+	
 	public void check(List<Stmt> statements, Map<String,Type> environment) {
-		for(Stmt s : statements) {
+		for(Stmt s : statements) {			
 			check(s,environment);
 		}
 	}
-
-	public void check(Stmt stmt, Map<String,Type> environment) {
+	
+	public void check(Stmt stmt, Map<String,Type> environment) {			
 		if(stmt instanceof Stmt.Assert) {
 			check((Stmt.Assert) stmt, environment);
 		} else if(stmt instanceof Stmt.Assign) {
@@ -125,7 +124,7 @@ public class TypeChecker {
 			internalFailure("unknown statement encountered (" + stmt + ")", file.filename,stmt);
 		}
 	}
-
+	
 
 	public void check(Stmt.VariableDeclaration stmt, Map<String,Type> environment) {
 		if(environment.containsKey(stmt.getName())) {
@@ -137,37 +136,37 @@ public class TypeChecker {
 		}
 		environment.put(stmt.getName(), stmt.getType());
 	}
-
+	
 	public void check(Stmt.Assert stmt, Map<String,Type> environment) {
 		Type t = check(stmt.getExpr(),environment);
 		checkInstanceOf(t,stmt.getExpr(),Type.Bool.class);
 	}
-
-
+	
+	
 	public void check(Stmt.Assign stmt, Map<String,Type> environment) {
 		Type lhs = check(stmt.getLhs(),environment);
 		Type rhs = check(stmt.getRhs(),environment);
 		// Make sure the type being assigned is a subtype of the destination
 		checkSubtype(lhs,rhs,stmt.getRhs());
 	}
-
+	
 	public void check(Stmt.Print stmt, Map<String,Type> environment) {
 		check(stmt.getExpr(),environment);
 		// For print statements, the right hand side can have any type.
 	}
-
+	
 	public void check(Stmt.Return stmt, Map<String, Type> environment) {
 		if(stmt.getExpr() != null) {
 			Type ret = check(stmt.getExpr(),environment);
 			// Make sure returned value is subtype of enclosing method's return
-			// type
+			// type 
 			checkSubtype(method.getRet(),ret,stmt.getExpr());
 		} else {
 			// Make sure return type is instance of Void
 			checkInstanceOf(method.getRet(),stmt,Type.Void.class);
 		}
 	}
-
+	
 	public void check(Stmt.IfElse stmt, Map<String,Type> environment) {
 		Type ct = check(stmt.getCondition(),environment);
 		// Make sure condition has bool type
@@ -175,31 +174,31 @@ public class TypeChecker {
 		check(stmt.getTrueBranch(),environment);
 		check(stmt.getFalseBranch(),environment);
 	}
-
+	
 	public void check(Stmt.For stmt, Map<String,Type> environment) {
 
 		Stmt.VariableDeclaration vd = stmt.getDeclaration();
 		check(vd,environment);
-
+		
 		// Clone the environment in order that the loop variable is only scoped
 		// for the life of the loop itself.
 		environment = new HashMap<String,Type>(environment);
 		environment.put(vd.getName(), vd.getType());
-
+		
 		Type ct = check(stmt.getCondition(),environment);
 		// Make sure condition has bool type
-		checkInstanceOf(ct,stmt.getCondition(),Type.Bool.class);
+		checkInstanceOf(ct,stmt.getCondition(),Type.Bool.class);		
 		check(stmt.getIncrement(),environment);
 		check(stmt.getBody(),environment);
 	}
-
+	
 	public void check(Stmt.While stmt, Map<String,Type> environment) {
 		Type ct = check(stmt.getCondition(),environment);
 		// Make sure condition has bool type
 		checkInstanceOf(ct,stmt.getCondition(),Type.Bool.class);
 		check(stmt.getBody(),environment);
 	}
-
+	
 	public void check(Stmt.Switch stmt, Map<String,Type> environment) {
 		Type ct = check(stmt.getExpr(),environment);
 		// Now, check each case individually
@@ -211,10 +210,10 @@ public class TypeChecker {
 			check(c.getBody(),environment);
 		}
 	}
-
+	
 	public Type check(Expr expr, Map<String,Type> environment) {
 		Type type;
-
+		
 		if(expr instanceof Expr.Binary) {
 			type = check((Expr.Binary) expr, environment);
 		} else if(expr instanceof Expr.Constant) {
@@ -235,31 +234,29 @@ public class TypeChecker {
 			type = check((Expr.Unary) expr, environment);
 		} else if(expr instanceof Expr.Variable) {
 			type = check((Expr.Variable) expr, environment);
-		} else if(expr instanceof Expr.Cast) {
-			type = check((Expr.Cast) expr, environment);
 		} else {
 			internalFailure("unknown expression encountered (" + expr + ")", file.filename,expr);
 			return null; // dead code
-		}
-
+		} 
+		
 		// Save the type attribute so that subsequent compiler stages can use it
 		// without having to recalculate it from scratch.
 		expr.attributes().add(new Attribute.Type(type));
-
+		
 		return type;
 	}
-
+	
 	public Type check(Expr.Binary expr, Map<String,Type> environment) {
 		Type leftType = check(expr.getLhs(), environment);
 		Type rightType = check(expr.getRhs(), environment);
-
-		switch(expr.getOp()) {
+	
+		switch(expr.getOp()) {		
 		case AND:
 		case OR:
 			// Check arguments have bool type
 			checkInstanceOf(leftType,expr.getLhs(),Type.Bool.class);
 			checkInstanceOf(rightType,expr.getRhs(),Type.Bool.class);
-			return leftType;
+			return leftType;			
 		case ADD:
 		case SUB:
 		case DIV:
@@ -270,7 +267,7 @@ public class TypeChecker {
 			checkInstanceOf(rightType,expr.getRhs(),Type.Int.class);
 			return leftType;
 		case EQ:
-		case NEQ:
+		case NEQ:			
 			// FIXME: we could do better here by making sure one of the
 			// arguments is a subtype of the other.
 			return new Type.Bool();
@@ -281,17 +278,17 @@ public class TypeChecker {
 			// Chewck arguments have int type
 			checkInstanceOf(leftType,expr.getLhs(),Type.Int.class);
 			checkInstanceOf(rightType,expr.getRhs(),Type.Int.class);
-			return new Type.Bool();
+			return new Type.Bool();		
 		default:
 			internalFailure("unknown unary expression encountered (" + expr + ")", file.filename,expr);
 			return null; // dead code
-		}
+		}		
 	}
-
+	
 	public Type check(Expr.Constant expr, Map<String,Type> environment) {
 		return typeOf(expr.getValue(),expr);
 	}
-
+	
 	public Type check(Expr.IndexOf expr, Map<String, Type> environment) {
 		Type srcType = check(expr.getSource(), environment);
 		Type indexType = check(expr.getIndex(), environment);
@@ -302,7 +299,7 @@ public class TypeChecker {
 				Type.Strung.class);
 		return ((Type.Array) srcType).getElement();
 	}
-
+	
 	public Type check(Expr.Invoke expr, boolean returnRequired, Map<String,Type> environment) {
 		WhileFile.MethodDecl fn = methods.get(expr.getName());
 		List<Expr> arguments = expr.getArguments();
@@ -323,7 +320,7 @@ public class TypeChecker {
 		}
 		return returnType;
 	}
-
+	
 	public Type check(Expr.ArrayGenerator expr, Map<String, Type> environment) {
 		Type element = check(expr.getValue(), environment);
 		Type size = check(expr.getSize(), environment);
@@ -331,7 +328,7 @@ public class TypeChecker {
 		checkInstanceOf(size,expr.getSize(),Type.Int.class);
 		return new Type.Array(element);
 	}
-
+	
 	public Type check(Expr.ArrayInitialiser expr, Map<String, Type> environment) {
 		ArrayList<Type> types = new ArrayList<Type>();
 		List<Expr> arguments = expr.getArguments();
@@ -342,7 +339,7 @@ public class TypeChecker {
 		Type lub = leastUpperBound(types,expr);
 		return new Type.Array(lub);
 	}
-
+	
 	public Type check(Expr.RecordAccess expr, Map<String, Type> environment) {
 		Type srcType = check(expr.getSource(), environment);
 		// Check src has record type
@@ -356,7 +353,7 @@ public class TypeChecker {
 		syntaxError("expected type to contain field: " + expr.getName(), file.filename, expr);
 		return null; // deadcode
 	}
-
+	
 	public Type check(Expr.RecordConstructor expr, Map<String, Type> environment) {
 		List<Pair<String, Expr>> arguments = expr.getFields();
 		List<Pair<Type, String>> types = new ArrayList<Pair<Type, String>>();
@@ -368,16 +365,16 @@ public class TypeChecker {
 
 		return new Type.Record(types);
 	}
-
+	
 	public Type check(Expr.Unary expr, Map<String,Type> environment) {
 		Type type = check(expr.getExpr(), environment);
 		switch(expr.getOp()) {
 		case NEG:
-			checkInstanceOf(type,expr.getExpr(),Type.Int.class);
+			checkInstanceOf(type,expr.getExpr(),Type.Int.class);			
 			return type;
 		case NOT:
 			checkInstanceOf(type,expr.getExpr(),Type.Bool.class);
-			return type;
+			return type;			
 		case LENGTHOF:
 			checkInstanceOf(type,expr.getExpr(),Type.Array.class,Type.Strung.class);
 			return new Type.Int();
@@ -386,7 +383,7 @@ public class TypeChecker {
 			return null; // dead code
 		}
 	}
-
+	
 	public Type check(Expr.Variable expr, Map<String, Type> environment) {
 		Type type = environment.get(expr.getName());
 		if (type == null) {
@@ -395,20 +392,10 @@ public class TypeChecker {
 		}
 		return type;
 	}
-
-	public Type check(Expr.Cast expr, Map<String, Type> environment) {
-		Type type = expr.getType();
-		Type evalType = check(expr.getExpr(), environment);
-		if (!isSubtype(evalType, type, new SyntacticElement.Impl())
-				&& !isSubtype(type, evalType, new SyntacticElement.Impl())){
-			syntaxError("invalid cast: " + evalType + " to " + type, file.filename, expr);
-		}
-		return type;
-	}
-
+	
 	/**
 	 * Determine the type of a constant value
-	 *
+	 * 
 	 * @param constant
 	 * @param elem
 	 * @return
@@ -422,8 +409,6 @@ public class TypeChecker {
 			return new Type.Int();
 		} else if (constant instanceof String) {
 			return new Type.Strung();
-		} else if (constant == null) {
-			return new Type.Null();
 		} else if (constant instanceof ArrayList) {
 			ArrayList<Object> list = (ArrayList) constant;
 			ArrayList<Type> types = new ArrayList<Type>();
@@ -449,31 +434,23 @@ public class TypeChecker {
 			return null; // dead code
 		}
 	}
-
+	
 	private Type leastUpperBound(List<Type> types, SyntacticElement elem) {
 		Type lub = new Type.Void();
 		for (Type t : types) {
 			if (isSubtype(t, lub, elem)) {
 				lub = t;
-			} else if (!isSubtype(lub, t, elem)){
-				if (lub instanceof Type.Union){
-					((Type.Union)lub).getTypes().add(t);
-				}
-				else {
-					List<Type> unionTypes = new ArrayList<Type>();
-					unionTypes.add(lub);
-					unionTypes.add(t);
-					lub = new Type.Union(unionTypes, asArray(lub.attributes()));
-				}
+			} else {
+				checkSubtype(lub, t, elem);
 			}
 		}
 		return lub;
 	}
-
+	
 	/**
 	 * Check that a given type t2 is an instance of of another type t1. This
 	 * method is useful for checking that a type is, for example, a List type.
-	 *
+	 * 
 	 * @param t1
 	 * @param type
 	 * @param element
@@ -481,7 +458,7 @@ public class TypeChecker {
 	 * @return
 	 */
 	public Type checkInstanceOf(Type type,
-			SyntacticElement element, Class<?>... instances) {
+			SyntacticElement element, Class<?>... instances) {		
 
 		if(type instanceof Type.Named) {
 			Type.Named tn = (Type.Named) type;
@@ -492,18 +469,18 @@ public class TypeChecker {
 				syntaxError("unknown type encountered: " + type, file.filename,
 						element);
 			}
-		}
+		} 		
 		for (Class<?> instance : instances) {
 			if (instance.isInstance(type)) {
 				// This cast is clearly unsafe. It relies on the caller of this
 				// method to do the right thing.
 				return type;
-			}
+			} 
 		}
-
+		
 		// Ok, we're going to fail with an error message. First, let's build up
 		// a useful human-readable message.
-
+		
 		String msg = "";
 		boolean firstTime = true;
 		for (Class<?> instance : instances) {
@@ -511,7 +488,7 @@ public class TypeChecker {
 				msg = msg + " or ";
 			}
 			firstTime=false;
-
+			
 			if (instance.getName().endsWith("Bool")) {
 				msg += "bool";
 			} else if (instance.getName().endsWith("Char")) {
@@ -530,15 +507,15 @@ public class TypeChecker {
 				return null;
 			}
 		}
-
+		
 		syntaxError("expected instance of " + msg + ", found " + type,
 				file.filename, element);
 		return null;
 	}
-
+	
 	/**
 	 * Check that a given type t2 is a subtype of another type t1.
-	 *
+	 * 
 	 * @param t1
 	 *            Supertype to check
 	 * @param t2
@@ -551,11 +528,11 @@ public class TypeChecker {
 			syntaxError("expected type " + t1 + ", found " + t2, file.filename,
 					element);
 		}
-	}
-
+	}	
+	
 	/**
 	 * Check that a given type t2 is a subtype of another type t1.
-	 *
+	 * 
 	 * @param t1
 	 *            Supertype to check
 	 * @param t2
@@ -563,46 +540,12 @@ public class TypeChecker {
 	 * @param element
 	 *            Used for determining where to report syntax errors.
 	 */
-	public boolean isSubtype(Type t1, Type t2, SyntacticElement element) {
-		if (t1 instanceof Type.Record){
-			Type.Record r1 = (Type.Record) t1;
-			for (Pair<Type, String> field : r1.getFields()) {
-				if (field.first() instanceof Type.Union){
-					return isSubtype(normalize(r1), t2, element);
-				}
-			}
-		} else if (t2 instanceof Type.Record){
-			Type.Record r2 = (Type.Record) t2;
-			for (Pair<Type, String> field : r2.getFields()) {
-				if (field.first() instanceof Type.Union){
-					return isSubtype(t1, normalize(r2), element);
-				}
-			}
-		}
-
-		if (t1 instanceof Type.Named) {
-			Type.Named tn = (Type.Named) t1;
-			if (types.containsKey(tn.getName())) {
-				Type body = types.get(tn.getName()).getType();
-				return isSubtype(body, t2, element);
-			} else {
-				syntaxError("unknown type encountered: " + t1, file.filename,
-						element);
-			}
-		} else if (t2 instanceof Type.Named) {
-			Type.Named tn = (Type.Named) t2;
-			if (types.containsKey(tn.getName())) {
-				Type body = types.get(tn.getName()).getType();
-				return isSubtype(t1, body, element);
-			} else {
-				syntaxError("unknown type encountered: " + t2, file.filename,
-						element);
-			}
-		} else if (t2 instanceof Type.Void) {
-			// OK
+	public boolean isSubtype(Type t1, Type t2, SyntacticElement element) {		
+		if (t2 instanceof Type.Void) {
+			// OK			
 			return true;
 		} else if (t1 instanceof Type.Bool && t2 instanceof Type.Bool) {
-			// OK
+			// OK		
 			return true;
 		} else if (t1 instanceof Type.Char && t2 instanceof Type.Char) {
 			// OK
@@ -611,9 +554,6 @@ public class TypeChecker {
 			// OK
 			return true;
 		} else if (t1 instanceof Type.Strung && t2 instanceof Type.Strung) {
-			// OK
-			return true;
-		} else if (t1 instanceof Type.Null && t2 instanceof Type.Null) {
 			// OK
 			return true;
 		} else if (t1 instanceof Type.Array && t2 instanceof Type.Array) {
@@ -642,7 +582,7 @@ public class TypeChecker {
 					}
 				}
 				return true;
-			}
+			}		
 		} else if (t1 instanceof Type.Named) {
 			Type.Named tn = (Type.Named) t1;
 			if (types.containsKey(tn.getName())) {
@@ -661,66 +601,14 @@ public class TypeChecker {
 				syntaxError("unknown type encountered: " + t2, file.filename,
 						element);
 			}
-		} else  if (t2 instanceof Type.Union){
-			Type.Union union2 = (Type.Union) t2;
-			for (Type child2 : union2.getTypes()){
-				if (!isSubtype(t1, child2, element)) return false;
-			}
-			return true;
-		} else if (t1 instanceof Type.Union){
-			Type.Union union1 = (Type.Union) t1;
-			for (Type child1 : union1.getTypes()){
-				if (isSubtype(child1, t2, element)) return true;
-			}
-			return false;
-		}
-		return false;
+		} 		
+		return false;		
 	}
-
-	private Type normalize(Record r) {
-		List<Pair<Type, String>> split1 = new ArrayList<Pair<Type, String>>();
-		List<Pair<Type, String>> split2 = new ArrayList<Pair<Type, String>>();
-		int field;
-		for (field = 0; field < r.getFields().size(); field++){
-			Pair<Type, String> t = r.getField(field);
-			// General case - just add the type to both sides of the split
-			if (!(t.first() instanceof Type.Union)){
-				split1.add(t);
-				split2.add(t);
-				continue;
-			}
-
-			// Create union type splitting the record in two
-			Type.Union u = (Type.Union)t.first();
-			split1.add(t.withFirst(u.getTypes().get(0)));
-			split2.add(t.withFirst(u.getTypes().get(1)));
-
-			// Add the remaining types to both sides of the union
-			for (field++; field < r.getFields().size(); field++){
-				split1.add(r.getField(field));
-				split2.add(r.getField(field));
-			}
-
-			// Create the outer union types
-			Type.Record r1 = new Type.Record(split1, asArray(r.attributes()));
-			Type.Record r2 = new Type.Record(split2, asArray(r.attributes()));
-			List<Type> union = new ArrayList<Type>();
-			union.add(r1);
-			union.add(r2);
-			return new Type.Union(union, asArray(r.attributes()));
-		}
-		return r;
-	}
-
-	private Attribute[] asArray(List<Attribute> attributes) {
-		Attribute[] attrs = new Attribute[attributes.size()];
-		return attributes.toArray(attrs);
-	}
-
+	
 	/**
 	 * Determine whether two given types are euivalent. Identical types are always
 	 * equivalent. Furthermore, e.g. "int|null" is equivalent to "null|int".
-	 *
+	 * 
 	 * @param t1
 	 *            first type to compare
 	 * @param t2
@@ -729,11 +617,11 @@ public class TypeChecker {
 	public boolean equivalent(Type t1, Type t2, SyntacticElement element) {
 		return isSubtype(t1,t2,element) && isSubtype(t2,t1,element);
 	}
-
+	
 	/**
 	 * Check that a given type is not equivalent to void. This is because void
 	 * cannot be used in certain situations.
-	 *
+	 * 
 	 * @param t
 	 * @param elemt
 	 */

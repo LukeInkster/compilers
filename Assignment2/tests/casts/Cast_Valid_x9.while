@@ -1,0 +1,8 @@
+int|null f(int|null x) {
+  if(x != null) {
+	return (null) x;
+  } else {
+	return (int) x;
+  }
+}
+ 

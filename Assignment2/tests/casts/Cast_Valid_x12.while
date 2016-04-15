@@ -1,0 +1,17 @@
+type u1 is int|bool
+
+type rec1 is {
+	{int|bool f}[] x
+}
+
+type rec2 is {
+	{int f}[]|{bool f}[] x
+}
+
+void main() {
+	u1[] a = [false, true, 1, 2];
+
+    rec1 p = {x: [{f: true}, {f: 1}, {f: false}, {f: 2}]};
+    rec2 q = {x: [{f: true}, {f: false}]};
+    rec2 r = {x: [{f: 1}, {f: 2}]};
+}

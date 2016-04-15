@@ -1,0 +1,12 @@
+type Record_1 is { int|null field }
+type Record_2 is { int field } | { null field }
+
+void main() {
+    Record_1 r1 = {field: 1};
+    Record_2 r2 = {field: null};
+
+    Record_1 cr1 = r2;
+    Record_2 cr2 = r1;
+
+    assert cr1.field == null;
+}

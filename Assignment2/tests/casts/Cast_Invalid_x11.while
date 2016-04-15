@@ -1,0 +1,13 @@
+type rec1 is {
+	{ int|bool x} a
+}
+
+type rec2 is {
+	{ int x } a
+}
+
+void main() {
+    rec1 p = {a: {x: true}};
+    rec1 q = {a: {x: 1}};
+    rec2 pp = (rec2)p;
+}

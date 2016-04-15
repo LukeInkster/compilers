@@ -1,0 +1,8 @@
+void main() {
+    {int a, bool c}|{int a} x = {a: 13, c: false};
+    {int a}|{int a, bool c} y = ({int a}) x;
+    {int a, bool c} z = ({int a, bool c})y;
+    
+    assert z.a == 13;
+    assert z.c == false;
+}

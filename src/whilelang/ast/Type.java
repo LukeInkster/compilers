@@ -31,18 +31,18 @@ import whilelang.util.SyntacticElement;
  * be written by a programmer, but is invalid type and should (eventually)
  * result in a syntax error.
  * </p>
- *
+ * 
  * @author David J. Pearce
- *
+ * 
  */
 public interface Type extends SyntacticElement {
 
 	/**
 	 * Represents the special <code>void</code> type which can only be used in
 	 * special circumstance (e.g. for a function return).
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Void extends SyntacticElement.Impl implements
 			Type {
@@ -50,7 +50,7 @@ public interface Type extends SyntacticElement {
 		public Void(Attribute... attributes) {
 			super(attributes);
 		}
-
+		
 		public String toString() {
 			return "void";
 		}
@@ -59,9 +59,9 @@ public interface Type extends SyntacticElement {
 	/**
 	 * Represents the <code>bool</code> type which contains the values
 	 * <code>true</code> and <code>false</code>.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Bool extends SyntacticElement.Impl implements
 			Type {
@@ -69,7 +69,7 @@ public interface Type extends SyntacticElement {
 		public Bool(Attribute... attributes) {
 			super(attributes);
 		}
-
+		
 		public String toString() {
 			return "bool";
 		}
@@ -79,16 +79,16 @@ public interface Type extends SyntacticElement {
 	 * Represents the <code>int</code> type which describes the set of all
 	 * integers described in 32bit twos compliment form. For example, this is
 	 * identical to a Java <code>int</code>.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Int extends SyntacticElement.Impl implements Type {
 
 		public Int(Attribute... attributes) {
 			super(attributes);
 		}
-
+		
 		public String toString() {
 			return "int";
 		}
@@ -99,9 +99,9 @@ public interface Type extends SyntacticElement {
 	 * ASCII characters. Observe that this is stricly less than that described
 	 * by Java's <code>char</code> type, which represents the set of UTF16
 	 * values.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Char extends SyntacticElement.Impl implements
 			Type {
@@ -109,7 +109,7 @@ public interface Type extends SyntacticElement {
 		public Char(Attribute... attributes) {
 			super(attributes);
 		}
-
+		
 		public String toString() {
 			return "char";
 		}
@@ -118,44 +118,27 @@ public interface Type extends SyntacticElement {
 	/**
 	 * Represents the <code>string</code> type which describes any sequence of
 	 * <code>char</code> values.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Strung extends SyntacticElement.Impl implements
 			Type {
 		public Strung(Attribute... attributes) {
 			super(attributes);
 		}
-
+		
 		public String toString() {
 			return "string";
 		}
 	}
 
 	/**
-	 * Represents the <code>null</code> type which describes the absence of a value.
-	 *
-	 * @author David J. Pearce
-	 *
-	 */
-	public static final class Null extends SyntacticElement.Impl implements
-			Type {
-		public Null(Attribute... attributes) {
-			super(attributes);
-		}
-
-		public String toString() {
-			return "null";
-		}
-	}
-
-	/**
 	 * Represents a named type which has yet to be expanded in the given
 	 * context.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Named extends SyntacticElement.Impl implements
 			Type {
@@ -173,20 +156,20 @@ public interface Type extends SyntacticElement {
 
 		/**
 		 * Get the name used by this type.
-		 *
+		 * 
 		 * @return
 		 */
 		public String getName() {
 			return name;
-		}
+		}		
 	}
 
 	/**
 	 * Represents the array type <code>T[]</code> which describes any sequence
 	 * of zero or more values of type <code>T</code>.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Array extends SyntacticElement.Impl implements
 			Type {
@@ -200,13 +183,13 @@ public interface Type extends SyntacticElement {
 
 		/**
 		 * Get the element type of this list.
-		 *
+		 * 
 		 * @return
 		 */
 		public Type getElement() {
 			return element;
 		}
-
+		
 		public String toString() {
 			return "[" + element + "]";
 		}
@@ -216,9 +199,9 @@ public interface Type extends SyntacticElement {
 	 * Represents a record type, such as <code>{int x, int y}</code>, which
 	 * consists of one or more (named) field types. Observe that records exhibit
 	 * <i>depth</i> subtyping, but not <i>width</i> subtyping.
-	 *
+	 * 
 	 * @author David J. Pearce
-	 *
+	 * 
 	 */
 	public static final class Record extends SyntacticElement.Impl implements Type {
 
@@ -236,17 +219,13 @@ public interface Type extends SyntacticElement {
 		/**
 		 * Get the fields which make up this record type. This are stored in the
 		 * order they are declared in the source file.
-		 *
+		 * 
 		 * @return
 		 */
 		public List<Pair<Type,String>> getFields() {
 			return fields;
 		}
-
-		public Pair<Type,String> getField(int index) {
-			return fields.get(index);
-		}
-
+		
 		public String toString() {
 			String r = "";
 
@@ -260,45 +239,5 @@ public interface Type extends SyntacticElement {
 
 			return "{" + r + "}";
 		}
-
-		public Record clone(){
-			Attribute[] attrs = new Attribute[attributes().size()];
-			return new Record(new ArrayList<Pair<Type, String>>(fields), attrs);
-		}
-	}
-
-	/**
-	 * Represents a union type, such as <code>int|bool</code>, which
-	 * consists of one or more (named) field types.
-	 */
-	public static final class Union extends SyntacticElement.Impl implements Type {
-
-		private final List<Type> types;
-
-		public Union(List<Type> types, Attribute... attributes) {
-			super(attributes);
-			this.types = types;
-
-			if (types.size() < 2) {
-				throw new IllegalArgumentException(
-						"Cannot create type union with fewer than two fields");
-			}
-		}
-
-		public List<Type> getTypes() {
-			return types;
-		}
-
-		public String toString() {
-			String r = "";
-
-			for (int i = 0; i != types.size(); ++i) {
-				if (i != 0) {
-					r = r + "|";
-				}
-				r = r + types.get(i);
-			}
-			return r;
-		}
-	}
+	}	
 }

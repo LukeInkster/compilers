@@ -1,0 +1,4 @@
+void main() {
+	{int a, int f} x = {a: 1, f: 2};
+	{int f} y = ({int f})x;
+}

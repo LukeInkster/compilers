@@ -1,0 +1,4 @@
+int f() {
+  int|null x = null;
+  return (int) x;
+}

@@ -1,0 +1,7 @@
+type Record_1 is { int|int[] field }
+type Record_2 is { null field } 
+
+void main() {
+    Record_1|null x = {field: [1]};
+    null|Record_2 cr1 = (null) x;   
+}

@@ -1,0 +1,9 @@
+type Record_1 is { int field } 
+type Record_2 is { null field }
+
+void main() {
+    Record_1 r1 = {field: 1};
+    Record_2 r2 = {field: null};
+    
+    Record_1|Record_2 cr1 = (Record_1) r2;   
+}

@@ -1,0 +1,4 @@
+void main() {
+    int|bool|null|int[] x = [1,2];
+    int|int[]|null y = (int[]|null|int)x;
+}
