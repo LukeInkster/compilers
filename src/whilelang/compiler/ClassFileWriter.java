@@ -195,7 +195,7 @@ public class ClassFileWriter {
 		// If the assertion fails, through runtime exception
 		constructObject(JvmTypes.JAVA_LANG_RUNTIMEEXCEPTION, bytecodes);
 		bytecodes.add(new Bytecode.Throw());
-		bytecodes.add(new Bytecode.Label(label));
+		bytecodes.add(label(label));
 	}
 
 	private void translate(Stmt.Assign stmt, Context context, List<Bytecode> bytecodes) {
@@ -212,7 +212,7 @@ public class ClassFileWriter {
 		for (String s : nests){
 			if (s.contains("loop")) toBreak = s;
 		}
-		bytecodes.add(new Bytecode.Goto(startOf(toBreak)));
+		bytecodes.add(Goto(startOf(toBreak)));
 	}
 
 	private void translate(Stmt.For stmt, Context context, List<Bytecode> bytecodes) {
@@ -287,6 +287,9 @@ public class ClassFileWriter {
 		String switchCase = switchLabel();
 		nests.push(switchCase);
 
+		Attribute.Type attr = stmt.getExpr().attribute(Attribute.Type.class);
+		JvmType type = toJvmType(attr.type);
+
 		Stmt.Case def = null;
 		String thisCase = caseLabel();
 		String nextCase = caseLabel();
@@ -296,15 +299,16 @@ public class ClassFileWriter {
 				continue;
 			}
 			bytecodes.add(label(startOf(thisCase)));
+			translate(stmt.getExpr(), context, bytecodes);
 			translate(c.getValue(), context, bytecodes);
-			bytecodes.add(new Bytecode.If(IfMode.NE, bodyOf(thisCase)));
+			bytecodes.add(new Bytecode.IfCmp(Bytecode.IfCmp.EQ, type, bodyOf(thisCase)));
 			bytecodes.add(Goto(startOf(nextCase)));
 			bytecodes.add(label(bodyOf(thisCase)));
 			translate(c.getBody(), context, bytecodes);
-			bytecodes.add(Goto(endOf(switchCase)));
 			thisCase = nextCase;
 			nextCase = caseLabel();
 		}
+		bytecodes.add(label(startOf(thisCase)));
 		if (def != null){
 			translate(def.getBody(), context, bytecodes);
 		}
@@ -475,11 +479,10 @@ public class ClassFileWriter {
 		String falseLabel = freshLabel();
 		bytecodes.add(new Bytecode.IfCmp(comparison, type, trueLabel));
 		bytecodes.add(new Bytecode.LoadConst(false));
-		bytecodes.add(new Bytecode.Goto(falseLabel));
-		bytecodes.add(new Bytecode.Label(trueLabel));
+		bytecodes.add(Goto(falseLabel));
+		bytecodes.add(label(trueLabel));
 		bytecodes.add(new Bytecode.LoadConst(true));
-		bytecodes.add(new Bytecode.Label(falseLabel));
-
+		bytecodes.add(label(falseLabel));
 	}
 
 	private void translate(Expr.Constant expr, Context context, List<Bytecode> bytecodes) {
@@ -530,13 +533,13 @@ public class ClassFileWriter {
 
 	private void translateNotHelper(List<Bytecode> bytecodes) {
 		String trueBranch = freshLabel();
-		String exitLabel = freshLabel();
+		String exit = freshLabel();
 		bytecodes.add(new Bytecode.If(IfMode.EQ, trueBranch));
 		bytecodes.add(new Bytecode.LoadConst(false));
-		bytecodes.add(new Bytecode.Goto(exitLabel));
-		bytecodes.add(new Bytecode.Label(trueBranch));
+		bytecodes.add(Goto(exit));
+		bytecodes.add(label(trueBranch));
 		bytecodes.add(new Bytecode.LoadConst(true));
-		bytecodes.add(new Bytecode.Label(exitLabel));
+		bytecodes.add(label(exit));
 	}
 
 	private void translate(Expr.Variable expr, Context context, List<Bytecode> bytecodes) {
