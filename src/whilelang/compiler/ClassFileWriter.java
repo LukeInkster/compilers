@@ -208,11 +208,11 @@ public class ClassFileWriter {
 	}
 
 	private void translate(Stmt.Continue stmt, Context context, List<Bytecode> bytecodes) {
-		String toBreak = null;
+		String toContinue = null;
 		for (String s : nests){
-			if (s.contains("loop")) toBreak = s;
+			if (s.contains("loop")) toContinue = s;
 		}
-		bytecodes.add(Goto(startOf(toBreak)));
+		bytecodes.add(Goto(startOf(toContinue)));
 	}
 
 	private void translate(Stmt.For stmt, Context context, List<Bytecode> bytecodes) {
@@ -221,15 +221,19 @@ public class ClassFileWriter {
 
 		translate(stmt.getDeclaration(), context, bytecodes);
 		bytecodes.add(Goto(conditionOf(loop)));
+
 		bytecodes.add(label(startOf(loop)));
 		translate(stmt.getIncrement(), context, bytecodes);
+
 		bytecodes.add(label(conditionOf(loop)));
 		translate(stmt.getCondition(), context, bytecodes);
 		bytecodes.add(new Bytecode.If(IfMode.NE, bodyOf(loop)));
 		bytecodes.add(Goto(endOf(loop)));
+
 		bytecodes.add(label(bodyOf(loop)));
 		translate(stmt.getBody(), context, bytecodes);
 		bytecodes.add(Goto(startOf(loop)));
+
 		bytecodes.add(label(endOf(loop)));
 
 		nests.pop();
@@ -315,26 +319,6 @@ public class ClassFileWriter {
 
 		bytecodes.add(label(endOf(switchCase)));
 		nests.pop();
-
-//		Stmt.Case def = null;
-//		for (Stmt.Case c : stmt.getCases()){
-//			String caseLabel = caseLabel();
-//			if (c.isDefault()){
-//				def = c;
-//				continue;
-//			}
-//			switchBytes.add(new Bytecode.Label(caseLabel));
-//			translate(c.getBody(), context, switchBytes);
-//			pairs.add(new jasm.util.Pair<Integer, String>(((Expr.Constant)c.getValue()).getValue().hashCode(), caseLabel));
-//		}
-//		String caseLabel = caseLabel();
-//		switchBytes.add(new Bytecode.Label(caseLabel));
-//		if (def != null){
-//			translate(def.getBody(), context, switchBytes);
-//		}
-//		translate(stmt.getExpr(), context, bytecodes);
-//		bytecodes.add(new Bytecode.Switch(caseLabel, pairs));
-//		bytecodes.addAll(switchBytes);
 	}
 
 	private void translate(Stmt.VariableDeclaration stmt, Context context, List<Bytecode> bytecodes) {
