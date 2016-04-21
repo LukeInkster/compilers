@@ -309,10 +309,13 @@ public class ClassFileWriter {
 			bytecodes.add(Goto(startOf(nextCase)));
 			bytecodes.add(label(bodyOf(thisCase)));
 			translate(c.getBody(), context, bytecodes);
+			bytecodes.add(Goto(bodyOf(nextCase)));
 			thisCase = nextCase;
 			nextCase = caseLabel();
 		}
+		
 		bytecodes.add(label(startOf(thisCase)));
+		bytecodes.add(label(bodyOf(thisCase)));
 		if (def != null){
 			translate(def.getBody(), context, bytecodes);
 		}

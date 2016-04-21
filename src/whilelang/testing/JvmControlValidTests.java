@@ -38,6 +38,7 @@ public class JvmControlValidTests extends AbstractJvmValidTests {
 			"Switch_Valid_22",
 			"Switch_Valid_23",
 			"Switch_Valid_24",
+			"Switch_Valid_25",
 			"Switch_Valid_2",
 			"Switch_Valid_3",
 			"Switch_Valid_6",
