@@ -10,7 +10,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class JvmControlValidTests extends AbstractJvmValidTests {
-	
+
 	/**
 	 * The set of tests which are suitable for this part of the assignment
 	 */
@@ -20,14 +20,16 @@ public class JvmControlValidTests extends AbstractJvmValidTests {
 			"For_Valid_2",
 			"For_Valid_3",
 			"For_Valid_5",
+			"For_Valid_6",
 			"While_Valid_7",
 			"While_Valid_8",
+			"While_Valid_9",
 			"Switch_Valid_10",
 			"Switch_Valid_11",
 			"Switch_Valid_12",
 			"Switch_Valid_13",
 			"Switch_Valid_14",
-			"Switch_Valid_15",			
+			"Switch_Valid_15",
 			"Switch_Valid_17",
 			"Switch_Valid_18",
 			"Switch_Valid_19",
@@ -43,7 +45,7 @@ public class JvmControlValidTests extends AbstractJvmValidTests {
 			"Switch_Valid_8",
 			"Switch_Valid_9",
 	};
-	
+
 	public JvmControlValidTests(String testName) {
 		super(testName);
 	}
@@ -52,5 +54,5 @@ public class JvmControlValidTests extends AbstractJvmValidTests {
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		return AbstractJvmValidTests.data(tests);
-	}	
+	}
 }
