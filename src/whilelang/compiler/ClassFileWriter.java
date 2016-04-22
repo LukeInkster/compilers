@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import jasm.attributes.Code.Handler;
 import jasm.attributes.SourceFile;
 import jasm.lang.Bytecode;
 import jasm.lang.Bytecode.IfMode;
@@ -122,7 +123,7 @@ public class ClassFileWriter {
 		// bytecode
 		addReturnAsNecessary(method,bytecodes);
 		//
-		jasm.attributes.Code code = new jasm.attributes.Code(bytecodes, Collections.EMPTY_LIST, cm);
+		jasm.attributes.Code code = new jasm.attributes.Code(bytecodes, Collections.<Handler> emptyList(), cm);
 		// Finally, add the jvm Code attribute to this method
 		cm.attributes().add(code);
 		// Done
@@ -270,7 +271,7 @@ public class ClassFileWriter {
 	}
 
 	private void translate(Stmt.Print stmt, Context context, List<Bytecode> bytecodes) {
-
+		//TODO
 	}
 
 	private void translate(Stmt.Return stmt, Context context, List<Bytecode> bytecodes) {
@@ -313,7 +314,7 @@ public class ClassFileWriter {
 			thisCase = nextCase;
 			nextCase = caseLabel();
 		}
-		
+
 		bytecodes.add(label(startOf(thisCase)));
 		bytecodes.add(label(bodyOf(thisCase)));
 		if (def != null){
@@ -402,11 +403,11 @@ public class ClassFileWriter {
 	}
 
 	private void translate(Expr.ArrayGenerator expr, Context context, List<Bytecode> bytecodes) {
-
+		//TODO
 	}
 
 	private void translate(Expr.ArrayInitialiser expr, Context context, List<Bytecode> bytecodes) {
-
+		//TODO
 	}
 
 	private void translate(Expr.Binary expr, Context context, List<Bytecode> bytecodes) {
@@ -414,8 +415,8 @@ public class ClassFileWriter {
 		Attribute.Type lhsAttr = expr.getLhs().attribute(Attribute.Type.class);
 		JvmType lhsType = toJvmType(lhsAttr.type);
 		translate(expr.getRhs(),context,bytecodes);
-		Attribute.Type rhsAttr = expr.getRhs().attribute(Attribute.Type.class);
-		JvmType rhsType = toJvmType(rhsAttr.type);
+		//Attribute.Type rhsAttr = expr.getRhs().attribute(Attribute.Type.class);
+		//JvmType rhsType = toJvmType(rhsAttr.type);
 		switch(expr.getOp()) {
 		case AND:
 			bytecodes.add(new Bytecode.BinOp(Bytecode.BinOp.AND, lhsType));
@@ -481,7 +482,7 @@ public class ClassFileWriter {
 	}
 
 	private void translate(Expr.IndexOf expr, Context context, List<Bytecode> bytecodes) {
-
+		//TODO
 	}
 
 	private void translate(Expr.Invoke expr, Context context, List<Bytecode> bytecodes) {
@@ -496,11 +497,11 @@ public class ClassFileWriter {
 	}
 
 	private void translate(Expr.RecordAccess expr, Context context, List<Bytecode> bytecodes) {
-
+		//TODO
 	}
 
 	private void translate(Expr.RecordConstructor expr, Context context, List<Bytecode> bytecodes) {
-
+		//TODO
 	}
 
 	private void translate(Expr.Unary expr, Context context, List<Bytecode> bytecodes) {
@@ -695,7 +696,7 @@ public class ClassFileWriter {
 	private void constructObject(JvmType.Clazz owner, List<Bytecode> bytecodes) {
 		bytecodes.add(new Bytecode.New(owner));
 		bytecodes.add(new Bytecode.Dup(owner));
-		JvmType.Function ftype = new JvmType.Function(JvmTypes.T_VOID, Collections.EMPTY_LIST);
+		JvmType.Function ftype = new JvmType.Function(JvmTypes.T_VOID, Collections.<JvmType> emptyList());
 		bytecodes.add(new Bytecode.Invoke(owner, "<init>", ftype, Bytecode.InvokeMode.SPECIAL));
 	}
 
@@ -825,7 +826,6 @@ public class ClassFileWriter {
 	}
 
 	private static int fresh = 0;
-	private static int freshSwitch = 0;
 
 	/**
 	 * Convert a While type into its JVM type.
