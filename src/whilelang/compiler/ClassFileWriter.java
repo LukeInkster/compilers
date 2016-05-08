@@ -18,9 +18,9 @@ import jasm.lang.Bytecode.IfMode;
 import jasm.lang.Bytecode.InvokeMode;
 import jasm.lang.ClassFile;
 import jasm.lang.JvmType;
+import jasm.lang.JvmType.Clazz;
 import jasm.lang.JvmTypes;
 import jasm.lang.Modifier;
-
 import whilelang.ast.*;
 import whilelang.util.Pair;
 
@@ -31,6 +31,10 @@ import whilelang.util.Pair;
  *
  */
 public class ClassFileWriter {
+	private static final Clazz SYSTEM = new Clazz("java.lang", "System");
+
+	private static final Clazz PRINTSTREAM = new Clazz("java.io", "PrintStream");
+
 	Stack<String> nests = new Stack<String>();
 
 	// Look in the Java Virtual Machine spec for information about this this
@@ -272,6 +276,15 @@ public class ClassFileWriter {
 
 	private void translate(Stmt.Print stmt, Context context, List<Bytecode> bytecodes) {
 		//TODO
+		bytecodes.add(new Bytecode.GetField(SYSTEM, "out", PRINTSTREAM, Bytecode.FieldMode.STATIC));
+
+		translate(stmt.getExpr(), context, bytecodes);
+		Attribute.Type attr = stmt.getExpr().attribute(Attribute.Type.class);
+		JvmType type = toJvmType(attr.type);
+
+		bytecodes.add(new Bytecode.Invoke(PRINTSTREAM, "println",
+				new JvmType.Function(JvmTypes.T_VOID, type),
+				Bytecode.InvokeMode.VIRTUAL));
 	}
 
 	private void translate(Stmt.Return stmt, Context context, List<Bytecode> bytecodes) {
