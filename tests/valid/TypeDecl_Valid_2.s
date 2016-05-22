@@ -17,12 +17,12 @@ wl_main:
 	addq $16, %rsp
 	movq $0, %rbx
 	cmpq %rax, %rbx
-	jnz label647
+	jnz label749
 	movq $1, %rax
-	jmp label648
-label647:
+	jmp label750
+label749:
 	movq $0, %rax
-label648:
+label750:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -34,15 +34,15 @@ label648:
 	addq $16, %rsp
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label649
+	jnz label751
 	movq $1, %rax
-	jmp label650
-label649:
+	jmp label752
+label751:
 	movq $0, %rax
-label650:
+label752:
 	movq %rax, %rdi
 	call assertion
-label646:
+label748:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

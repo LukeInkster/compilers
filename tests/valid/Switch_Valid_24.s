@@ -6,30 +6,30 @@ wl_f:
 	movq 24(%rbp), %rax
 	leaq str0(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label591
+	jnz label662
 	movq $0, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label589
-label591:
+	jmp label660
+label662:
 	leaq str1(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label592
+	jnz label663
 	movq $1, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label589
-label592:
+	jmp label660
+label663:
 	leaq str2(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label593
+	jnz label664
 	movq $2, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label589
-label593:
-label590:
+	jmp label660
+label664:
+label661:
 	movq $3, %rax
 	movq %rax, 16(%rbp)
-	jmp label589
-label589:
+	jmp label660
+label660:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -48,12 +48,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label595
+	jnz label666
 	movq $1, %rax
-	jmp label596
-label595:
+	jmp label667
+label666:
 	movq $0, %rax
-label596:
+label667:
 	movq %rax, %rdi
 	call assertion
 	movq $0, %rax
@@ -68,12 +68,12 @@ label596:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label597
+	jnz label668
 	movq $1, %rax
-	jmp label598
-label597:
+	jmp label669
+label668:
 	movq $0, %rax
-label598:
+label669:
 	movq %rax, %rdi
 	call assertion
 	movq $1, %rax
@@ -88,12 +88,12 @@ label598:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label599
+	jnz label670
 	movq $1, %rax
-	jmp label600
-label599:
+	jmp label671
+label670:
 	movq $0, %rax
-label600:
+label671:
 	movq %rax, %rdi
 	call assertion
 	movq $2, %rax
@@ -108,12 +108,12 @@ label600:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label601
+	jnz label672
 	movq $1, %rax
-	jmp label602
-label601:
+	jmp label673
+label672:
 	movq $0, %rax
-label602:
+label673:
 	movq %rax, %rdi
 	call assertion
 	movq $3, %rax
@@ -128,15 +128,15 @@ label602:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label603
+	jnz label674
 	movq $1, %rax
-	jmp label604
-label603:
+	jmp label675
+label674:
 	movq $0, %rax
-label604:
+label675:
 	movq %rax, %rdi
 	call assertion
-label594:
+label665:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

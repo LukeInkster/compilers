@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import jx86.lang.*;
 import whilelang.ast.*;
@@ -88,7 +89,7 @@ public class X86FileWriter {
 	/**
 	 * Translate a given function declaration into a sequence of assembly
 	 * language instructions.
-	 * 
+	 *
 	 * @param md
 	 *            Method Declaration to translate.
 	 * @param code
@@ -156,7 +157,7 @@ public class X86FileWriter {
 	 * pointer. The amount of space required by each variable is determined by
 	 * from its type.
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 *       +----------------+
 	 *       |  parameter #1  |
@@ -167,7 +168,7 @@ public class X86FileWriter {
 	 *       +----------------+
 	 *       |  return value  |
 	 *       +----------------+
-	 *       | return address |       
+	 *       | return address |
 	 *       +----------------+
 	 *  FP-> | old frame ptr  |
 	 *       +----------------+
@@ -177,7 +178,7 @@ public class X86FileWriter {
 	 * from the frame pointer (whilst e.g. local variables are accessed at
 	 * negative offsets).
 	 * </p>
-	 * 
+	 *
 	 * @param method
 	 *            Method for which to create the stack frame
 	 * @param allocation
@@ -218,7 +219,7 @@ public class X86FileWriter {
 	 * the callee and, hence, will be located below the frame pointer. The
 	 * amount of space required by each variable is determined by from its type.
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 *       +----------------+
 	 *       | return address |
@@ -236,7 +237,7 @@ public class X86FileWriter {
 	 * Here, the local variables are accessed at negative offsets from the frame
 	 * pointer (whilst e.g. parameters are accessed at positive offsets).
 	 * </p>
-	 * 
+	 *
 	 * @param method
 	 *            Method for which to create the stack frame
 	 * @param allocation
@@ -271,7 +272,7 @@ public class X86FileWriter {
 	 * Translate a list of statements into their corresponding machine code
 	 * instructions. Observe that we implicitly assume all registers are
 	 * available for use between statements.
-	 * 
+	 *
 	 * @param statements
 	 *            List of statements to be translated.
 	 * @param localVariables
@@ -293,7 +294,7 @@ public class X86FileWriter {
 	 * Translate a given statement into its corresponding corresponding machine
 	 * code instructions. Observe that we implicitly assume all registers are
 	 * available for use between statements.
-	 * 
+	 *
 	 * @param statement
 	 *            Statement to be translated
 	 */
@@ -338,7 +339,7 @@ public class X86FileWriter {
 	 * defined in the runtime.c library which, in turn, uses the standard C
 	 * "assert" macro to actually do the work of checking the assertion and
 	 * throwing an appropriate error if it fails.
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
@@ -360,7 +361,7 @@ public class X86FileWriter {
 	 * of machine instructions. The translation depends on the form of the
 	 * left-hand side. That is, whether we are assigning to a variable directly,
 	 * or into a compound value (e.g. a record or array).
-	 * 
+	 *
 	 * @param statement
 	 */
 	public void translate(Stmt.Assign statement, Context context) {
@@ -378,30 +379,37 @@ public class X86FileWriter {
 			// assigned to into a register. Then create a memory location using
 			// that register as base and translate the rhs directly into that
 			// location.
+			//TODO
 			throw new IllegalArgumentException("record assignment not implemented (yet)");
 		} else {
+			//TODO
 			throw new IllegalArgumentException("array assignment not implemented (yet)");
 		}
 	}
 
 	public void translate(Stmt.Break statement, Context context) {
-		throw new IllegalArgumentException("break statements not implemented (yet)");
+		List<Instruction> instructions = context.instructions();
+		instructions.add(new Instruction.Addr(Instruction.AddrOp.jmp, context.peekBreak()));
 	}
 
 	public void translate(Stmt.Continue statement, Context context) {
-		throw new IllegalArgumentException("continue statements not implemented (yet)");
+		List<Instruction> instructions = context.instructions();
+		instructions.add(new Instruction.Addr(Instruction.AddrOp.jmp, context.peekContinue()));
 	}
 
 	/**
 	 * Translate a for statement in the While language to a sequence of machine
 	 * instructions.
-	 * 
+	 *
 	 * @param statement
 	 */
 	public void translate(Stmt.For statement, Context context) {
 		List<Instruction> instructions = context.instructions();
 		String headLabel = freshLabel();
 		String exitLabel = freshLabel();
+		String incrLabel = freshLabel();
+		context.pushBreak(exitLabel);
+		context.pushContinue(incrLabel);
 
 		// Translate Variable Declaration
 		translate(statement.getDeclaration(), context);
@@ -415,17 +423,19 @@ public class X86FileWriter {
 		translate(statement.getBody(), context);
 
 		// Translate Increment and loop around
+		instructions.add(new Instruction.Label(incrLabel));
 		translate(statement.getIncrement(), context);
 		instructions.add(new Instruction.Addr(Instruction.AddrOp.jmp, headLabel));
 
 		// Exit ...
 		instructions.add(new Instruction.Label(exitLabel));
+		context.popBreakAndContinue();
 	}
 
 	/**
 	 * Translate an if statement in the While language to a sequence of machine
 	 * instructions.
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
@@ -455,7 +465,7 @@ public class X86FileWriter {
 	/**
 	 * Translate a print statement in the While language to a sequence of
 	 * machine instructions.
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
@@ -503,7 +513,7 @@ public class X86FileWriter {
 	 * variable name, "$", which we can simply read out from the local variables
 	 * map.
 	 * </p>
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
@@ -530,7 +540,7 @@ public class X86FileWriter {
 	 * machine instructions. This will only actually correspond to any
 	 * instructions if the declaration includes an initialiser. In such case,
 	 * the generated code is the same as for a simple assignment statement.
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
@@ -551,20 +561,40 @@ public class X86FileWriter {
 	/**
 	 * Translate a while statement in the While language to a sequence of
 	 * machine instructions.
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
 	 * @param data
 	 */
 	public void translate(Stmt.While statement, Context context) {
-		throw new IllegalArgumentException("while loops not implemented (yet)");
+//		throw new IllegalArgumentException("while loops not implemented (yet)");
+		List<Instruction> instructions = context.instructions();
+		String headLabel = freshLabel();
+		String exitLabel = freshLabel();
+		context.pushContinue(headLabel);
+		context.pushBreak(exitLabel);
+
+		// Start loop, and translate condition
+		instructions.add(new Instruction.Label(headLabel));
+		// Translate the condition expression and branch to the false label
+		translateCondition(statement.getCondition(), exitLabel, context);
+
+		// Translate Loop Body
+		translate(statement.getBody(), context);
+
+		// Loop back
+		instructions.add(new Instruction.Addr(Instruction.AddrOp.jmp, headLabel));
+
+		// Exit ...
+		instructions.add(new Instruction.Label(exitLabel));
+		context.popBreakAndContinue();
 	}
 
 	/**
 	 * Translate a switch statement in the While language to a sequence of
 	 * machine instructions.
-	 * 
+	 *
 	 * @param statement
 	 * @param localVariables
 	 * @param code
@@ -577,6 +607,7 @@ public class X86FileWriter {
 		// The exit label will represent the exit point from the switch
 		// statement. Any cases which end in a break will branch to it.
 		String exitLabel = freshLabel();
+		context.pushBreak(exitLabel);
 		// Translate the expression we are switching on, and place result
 		// into the target register.
 		translate(statement.getExpr(), tmps[0], context);
@@ -597,7 +628,6 @@ public class X86FileWriter {
 				translate(c.getValue(), tmps[1], context);
 				bitwiseEquality(tmps[0], tmps[1], nextLabel, context);
 			}
-			// FIXME: need to handle break and continue statements!
 			translate(c.getBody(), context);
 			instructions.add(new Instruction.Label(nextLabel));
 		}
@@ -605,6 +635,7 @@ public class X86FileWriter {
 		instructions.add(new Instruction.Label(exitLabel));
 		// Free up space used for value being switch upon
 		freeLocations(context, tmps);
+		context.popBreak();
 	}
 
 	// =================================================================
@@ -615,7 +646,7 @@ public class X86FileWriter {
 	 * Translate a condition expression and, if it is false, branch to a given
 	 * false destination. Otherwise, execution continues to the following
 	 * instruction.
-	 * 
+	 *
 	 * @param e
 	 *            A binary relational expression
 	 * @param falseLabel
@@ -665,7 +696,7 @@ public class X86FileWriter {
 
 	/**
 	 * Translate a logical NOT expression (i.e. '!').
-	 * 
+	 *
 	 * @param e
 	 *            A binary logical expression
 	 * @param falseLabel
@@ -689,7 +720,7 @@ public class X86FileWriter {
 	/**
 	 * Translate a logical OR expression (i.e. '||'). This supports
 	 * short-circuiting evaluation.
-	 * 
+	 *
 	 * @param e
 	 *            A binary logical expression
 	 * @param falseLabel
@@ -710,7 +741,7 @@ public class X86FileWriter {
 	/**
 	 * Translate a logical AND expression (i.e. '||'). This supports
 	 * short-circuiting evaluation.
-	 * 
+	 *
 	 * @param e
 	 *            A binary logical expression
 	 * @param falseLabel
@@ -726,7 +757,7 @@ public class X86FileWriter {
 	 * Translate one of the four relational comparators (i.e. <,<=,>= and >).
 	 * These comparators are relatively straightforward because they can only be
 	 * applied to integer (i.e. primitive) values.
-	 * 
+	 *
 	 * @param e
 	 *            A binary relational expression
 	 * @param falseLabel
@@ -769,7 +800,7 @@ public class X86FileWriter {
 	 * Translate the equality comparator for values of a given type. In the case
 	 * the equality holds, control will continue to the next instruction in
 	 * sequence. Otherwise, it will branch to a given false destination.
-	 * 
+	 *
 	 * @param type
 	 *            The type of values being compared.
 	 * @param falseLabel
@@ -810,7 +841,7 @@ public class X86FileWriter {
 	 * target register or, if that is null, on the stack. The set of free
 	 * registers is provided to identify the pool from which target registers
 	 * can be taken.
-	 * 
+	 *
 	 * @param expression
 	 *            Expression to be translated.
 	 * @param target
@@ -848,7 +879,7 @@ public class X86FileWriter {
 	 * Translate a given expression via a register target. Thus, the expression
 	 * is first loaded into a temporary register and then bit-blasted into the
 	 * target location.
-	 * 
+	 *
 	 * @param e
 	 *            Expression to be translate
 	 * @param target
@@ -865,7 +896,7 @@ public class X86FileWriter {
 	/**
 	 * Translate a binary expression into the corresponding machine code
 	 * instructions.
-	 * 
+	 *
 	 * @param expression
 	 *            Expression to be translated.
 	 * @param target
@@ -900,7 +931,7 @@ public class X86FileWriter {
 	 * Translate a binary condition when used in the context of a general
 	 * expression. This means that the condition must load either a zero or one
 	 * into the target register.
-	 * 
+	 *
 	 * @param e
 	 *            Expression to be translated.
 	 * @param target
@@ -924,7 +955,7 @@ public class X86FileWriter {
 	 * Translate one of the arithmetic operators (i.e. +,-,*, etc). These are
 	 * relatively straightforward because they can only be applied to integer
 	 * (i.e. primitive) data.
-	 * 
+	 *
 	 * @param e
 	 *            Expression to be translated.
 	 * @param target
@@ -1182,7 +1213,7 @@ public class X86FileWriter {
 	 * allocate it in some temporary storage on the stack. Roughly, the layout
 	 * looks like this after this is completed:
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 *      +----------------+
 	 * FP-> | old frame ptr  |
@@ -1196,7 +1227,7 @@ public class X86FileWriter {
 	 *             ...
 	 *      +----------------+
 	 *      |    padding     |
-	 *      +----------------+ 
+	 *      +----------------+
 	 *      |    field #n    |
 	 *      +----------------+
 	 *             ...
@@ -1204,13 +1235,13 @@ public class X86FileWriter {
 	 * SP-> |    field 1     |
 	 * 	    +----------------+
 	 * </pre>
-	 * 
+	 *
 	 * As when allocating space on the stack for the caller environment, we must
 	 * ensure the stack remains 16byte aligned. This means there may be one or
 	 * more words of padding inserted. For convenience, this is done at the
 	 * highest point in the stack. At the end, the target register will match
 	 * the Stack Pointer (i.e. at the base address of the record).
-	 * 
+	 *
 	 * @param e
 	 *            Expression to be translated.
 	 * @param target
@@ -1278,7 +1309,7 @@ public class X86FileWriter {
 	 * potentially returning a value. Note that the return register should be a
 	 * free register, whilst the argument registers may or may not be (and if
 	 * not they will not be preserved).
-	 * 
+	 *
 	 * @param name
 	 *            The external method to call
 	 * @param code
@@ -1353,7 +1384,7 @@ public class X86FileWriter {
 	 * Save all registers in a given pool which are in use on the stack. This is
 	 * done (for example) as part of the caller-save protocol. The set of used
 	 * registers is determined as the set of registers which are not "Free".
-	 * 
+	 *
 	 * @param pool
 	 *            The pool of registers which we want to save (if necessary)
 	 */
@@ -1376,7 +1407,7 @@ public class X86FileWriter {
 	 * This is done (for example) as part of the caller-save protocol. The set
 	 * of used registers is determined as the set of registers which are not
 	 * "Free".
-	 * 
+	 *
 	 * @param pool
 	 *            The array of registers which we want to restore (if necessary)
 	 */
@@ -1400,7 +1431,7 @@ public class X86FileWriter {
 	 * register (e.g. record types), the location will be allocated on the
 	 * stack.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * <b>NOTE:</b>In the event that a free register is allocated, this register
 	 * will not be locked. The reason for this is that the register could still
@@ -1411,7 +1442,7 @@ public class X86FileWriter {
 	 * freed once they are no longer needed. This is to ensure that any stack
 	 * space allocated is eventually released.
 	 * </p>
-	 * 
+	 *
 	 * @param e
 	 *            Expression whose result we are allocating a location for.
 	 * @param context
@@ -1428,7 +1459,7 @@ public class X86FileWriter {
 	 * single register (e.g. record types), the location will be allocated on
 	 * the stack.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * <b>NOTE:</b>In the event that a free register is allocated, this register
 	 * will not be locked. The reason for this is that the register could still
@@ -1439,7 +1470,7 @@ public class X86FileWriter {
 	 * freed once they are no longer needed. This is to ensure that any stack
 	 * space allocated is eventually released.
 	 * </p>
-	 * 
+	 *
 	 * @param e
 	 *            Expression whose result we are allocating a location for.
 	 * @param context
@@ -1470,7 +1501,7 @@ public class X86FileWriter {
 	 * was allocated to a register, then this will do nothing. However, if the
 	 * location was allocated to some space on the stack then it will release
 	 * this space by moving the stack pointer accordingly.
-	 * 
+	 *
 	 * @param l
 	 * @param context
 	 */
@@ -1491,7 +1522,7 @@ public class X86FileWriter {
 	 * Perform a bitwise copy from one location to another. If both locations
 	 * are registers, then it's just a register assignment. Otherwise, it will
 	 * involve one or more indirect reads / writes.
-	 * 
+	 *
 	 * @param from
 	 *            Location to copy bits from
 	 * @param to
@@ -1540,7 +1571,7 @@ public class X86FileWriter {
 	 * Perform bitwise equality test of two locations. If they are not equal,
 	 * then branch to the false label. Otherwise, control proceeds to the next
 	 * instruction in sequence.
-	 * 
+	 *
 	 * @param lhs
 	 * @param rhs
 	 * @param falseLabel
@@ -1613,7 +1644,7 @@ public class X86FileWriter {
 	 * alignment. Therefore, it's much easier if we just keep the stack aligned
 	 * the whole way along.
 	 * </p>
-	 * 
+	 *
 	 * @param minimumWidth
 	 *            The number of bytes to allocate on the stack. This is a
 	 *            minimum value, as more bytes might actually be allocated than
@@ -1649,7 +1680,7 @@ public class X86FileWriter {
 	 * alignment. Therefore, it's much easier if we just keep the stack aligned
 	 * the whole way along.
 	 * </p>
-	 * 
+	 *
 	 * @param minimumWidth
 	 *            The number of bytes to allocate on the stack. This is a
 	 *            minimum value, as more bytes might actually be allocated than
@@ -1690,7 +1721,7 @@ public class X86FileWriter {
 	/**
 	 * Determine the width of the callee stack frame. That is, the amount of
 	 * space which must be reserved for the local variables.
-	 * 
+	 *
 	 * @param method
 	 * @return
 	 */
@@ -1712,7 +1743,7 @@ public class X86FileWriter {
 	 * Determine the amount of space required for the parameters and return
 	 * value of a given method. This must be padded out so that it is aligned on
 	 * certain architectures.
-	 * 
+	 *
 	 * @param md
 	 * @return
 	 */
@@ -1729,7 +1760,7 @@ public class X86FileWriter {
 	 * This ensures that the width returned is a multiple of 16. This is
 	 * necessary to ensure that the stack is 16byte aligned in order to meet the
 	 * requirements of the System V ABI.
-	 * 
+	 *
 	 * @param minimum
 	 *            The minumum number of bytes required for the stack frame to
 	 *            hold all the necessary local variables, etc.
@@ -1749,7 +1780,7 @@ public class X86FileWriter {
 	 * everything to the nearest "natural" word size for the given architecture.
 	 * For example, on x86_64, this function returns 8 for type bool. Obviously,
 	 * this is not the most efficient.
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -1780,7 +1811,7 @@ public class X86FileWriter {
 	 * Determine the offset of a given field in a given type. This is done by
 	 * calculating the width of each field until we find the one we're looking
 	 * for.
-	 * 
+	 *
 	 * @param type
 	 *            --- Type of the record containing the field whose offset we
 	 *            wish to calculate.
@@ -1803,7 +1834,7 @@ public class X86FileWriter {
 
 	/**
 	 * Determine the type of a given field
-	 * 
+	 *
 	 * @param type
 	 * @param field
 	 * @return
@@ -1821,7 +1852,7 @@ public class X86FileWriter {
 	 * Determine the type of every declared local variable. In cases where we
 	 * have two local variables with the same name but different types, choose
 	 * the physically largest type (in bytes).
-	 * 
+	 *
 	 * @param statements
 	 * @param allocation
 	 */
@@ -1891,7 +1922,7 @@ public class X86FileWriter {
 	 * format and supports alternative calling conventions (perhaps for
 	 * efficiency?). Thus, on MacOS, symbols which adhere to standard calling
 	 * conventions are prefixed with an underscore.
-	 * 
+	 *
 	 * @param name
 	 */
 	private String externalSymbolName(String name) {
@@ -1907,7 +1938,7 @@ public class X86FileWriter {
 	 * when this process is executed. This sequence is operating system
 	 * dependent, and simply calls the translated <code>main()</code> method
 	 * from the original while source file.
-	 * 
+	 *
 	 * @param xf
 	 */
 	private void addMainLauncher(X86File.Code code) {
@@ -1927,7 +1958,7 @@ public class X86FileWriter {
 	 * <code>x86_64</code> the head of the <code>bx</code> family is
 	 * <code>rbx</code>. Conversely, the head of the <code>bx</code> family is
 	 * <code>ebx</code> on <code>x86_32</code>.
-	 * 
+	 *
 	 * @param register
 	 * @return
 	 */
@@ -1963,7 +1994,7 @@ public class X86FileWriter {
 	 * expression. For results which are guaranteed to fit into a register, we
 	 * want a register target. For results which don't fit into a register (e.g.
 	 * a record) we need a stack target.
-	 * 
+	 *
 	 * @author David J. Pearce
 	 *
 	 */
@@ -1982,7 +2013,7 @@ public class X86FileWriter {
 	/**
 	 * A register target is the simple case where the given result fits into a
 	 * register.
-	 * 
+	 *
 	 * @author David J. Pearce
 	 *
 	 */
@@ -2018,7 +2049,7 @@ public class X86FileWriter {
 	 * (typically either the stack or frame pointer). This is necessary for the
 	 * case where we are writing a value which doesn't fit into a single
 	 * register (e.g. a record).
-	 * 
+	 *
 	 * @author David J. Pearce
 	 *
 	 */
@@ -2052,6 +2083,8 @@ public class X86FileWriter {
 	}
 
 	private class Context {
+		private final Stack<String> breakContext;
+		private final Stack<String> continueContext;
 		private final Map<String, MemoryLocation> localVariables;
 		private final String exitLabel;
 		private final X86File.Code code;
@@ -2059,12 +2092,50 @@ public class X86FileWriter {
 		private final List<Register> freeRegisters;
 
 		public Context(List<Register> freeRegisters, Map<String, MemoryLocation> localVariables, String exitLabel,
-				X86File.Code code, X86File.Data data) {
+				X86File.Code code, X86File.Data data, Stack<String> breakContext, Stack<String> continueContext) {
 			this.localVariables = localVariables;
 			this.code = code;
 			this.data = data;
 			this.freeRegisters = freeRegisters;
 			this.exitLabel = exitLabel;
+			this.breakContext = breakContext;
+			this.continueContext = continueContext;
+		}
+
+		public Context(List<Register> freeRegisters, Map<String, MemoryLocation> localVariables,
+				String exitLabel, X86File.Code code, X86File.Data data) {
+			this.localVariables = localVariables;
+			this.code = code;
+			this.data = data;
+			this.freeRegisters = freeRegisters;
+			this.exitLabel = exitLabel;
+			this.breakContext = new Stack<String>();
+			this.continueContext = new Stack<String>();
+		}
+
+		public void pushBreak(String label){
+			breakContext.push(label);
+		}
+
+		public void pushContinue(String label){
+			continueContext.push(label);
+		}
+
+		public String peekBreak(){
+			return breakContext.peek();
+		}
+
+		public String peekContinue(){
+			return continueContext.peek();
+		}
+
+		public String popBreak(){
+			return breakContext.pop();
+		}
+
+		public void popBreakAndContinue(){
+			breakContext.pop();
+			continueContext.pop();
 		}
 
 		public MemoryLocation getVariableLocation(String name) {
@@ -2087,7 +2158,7 @@ public class X86FileWriter {
 		 * Select a free register from the list of free registers. Note that
 		 * this register is not removed from the list of free registers (as this
 		 * only happens when the register is locked).
-		 * 
+		 *
 		 * @param freeRegister
 		 * @return
 		 */
@@ -2104,7 +2175,7 @@ public class X86FileWriter {
 		 * register, in which case it is removed from the list of free
 		 * registers. We are essentially "locking" that register and preventing
 		 * it from being used as a location for a subsequent operation.
-		 * 
+		 *
 		 * @param freeRegister.
 		 *            The free register to lock. This should be in the list of
 		 *            free registers.
@@ -2118,7 +2189,7 @@ public class X86FileWriter {
 				}
 				ArrayList<Register> nFreeRegs = new ArrayList<Register>(freeRegisters);
 				nFreeRegs.remove(sl.register);
-				return new Context(nFreeRegs, localVariables, exitLabel, code, data);
+				return new Context(nFreeRegs, localVariables, exitLabel, code, data, breakContext, continueContext);
 			} else {
 				return this;
 			}
@@ -2129,7 +2200,7 @@ public class X86FileWriter {
 		 * a register, in which case it is removed from the list of free
 		 * registers. We are essentially "unlocking" that register so that it
 		 * can be used as a location for a subsequent operation.
-		 * 
+		 *
 		 * @param freeRegister.
 		 *            The free register to unlock. This should be in the list of
 		 *            free registers.
@@ -2143,7 +2214,7 @@ public class X86FileWriter {
 				}
 				ArrayList<Register> nFreeRegs = new ArrayList<Register>(freeRegisters);
 				nFreeRegs.add(sl.register);
-				return new Context(nFreeRegs, localVariables, exitLabel, code, data);
+				return new Context(nFreeRegs, localVariables, exitLabel, code, data, breakContext, continueContext);
 			} else {
 				return this;
 			}
@@ -2153,7 +2224,7 @@ public class X86FileWriter {
 		 * Determine the set of used registers from a given pool of registers.
 		 * That is, the registers in the pool which are not in the list of free
 		 * registers.
-		 * 
+		 *
 		 * @param freeRegisters
 		 * @return
 		 */

@@ -1,0 +1,14 @@
+int f() {
+    int y = 0;
+    while(y < 10) {
+		y = y + 1;
+		if (true) {break;}
+		y = y + 1;
+	}
+    return y;
+}
+
+
+void main() {
+    assert 1 == f();
+}
