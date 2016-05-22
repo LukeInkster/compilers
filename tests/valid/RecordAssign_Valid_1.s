@@ -48,21 +48,17 @@ label380:
 label381:
 	movq %rax, %rdi
 	call assertion
-	subq $16, %rsp
 	movq -16(%rbp), %rax
-	movq %rax, 0(%rsp)
-	movq -8(%rbp), %rax
-	movq %rax, 8(%rsp)
 	subq $16, %rsp
-	movq -16(%rbp), %rax
-	movq %rax, 0(%rsp)
-	movq -8(%rbp), %rax
-	movq %rax, 8(%rsp)
-	movq 8(%rsp), %rax
+	movq -16(%rbp), %rbx
+	movq %rbx, 0(%rsp)
+	movq -8(%rbp), %rbx
+	movq %rbx, 8(%rsp)
+	movq 8(%rsp), %rbx
 	addq $16, %rsp
-	movq $2, %rbx
-	subq %rbx, %rax
-	movq %rax, 0(%rsp)
+	movq $2, %rcx
+	subq %rcx, %rbx
+	movq %rbx, 0(%rax)
 	subq $32, %rsp
 	movq -16(%rbp), %rax
 	movq %rax, 0(%rsp)

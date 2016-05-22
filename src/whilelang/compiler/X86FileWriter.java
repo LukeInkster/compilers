@@ -379,17 +379,24 @@ public class X86FileWriter {
 			// assigned to into a register. Then create a memory location using
 			// that register as base and translate the rhs directly into that
 			// location.
-
+			//TODO
 			Expr.RecordAccess ra = (Expr.RecordAccess) lhs;
 
 			Type.Record type = (Type.Record) unwrap(ra.getSource().attribute(Attribute.Type.class).type);
 			int offset = getFieldOffset(type, ra.getName());
-			System.out.println(offset);
-			MemoryLocation recordLocation = (MemoryLocation) allocateLocation(ra.getSource(), context);
 
-			translate(ra.getSource(), recordLocation, context);
-			MemoryLocation fieldLocation = new MemoryLocation(type, recordLocation.base, offset);
+			RegisterLocation rax = (RegisterLocation)allocateLocation(statement.getRhs(), context);
+			context = context.lockLocation(rax);
+
+			System.out.println(rax.register);
+			translate(ra.getSource(), rax, context);
+
+			MemoryLocation fieldLocation = new MemoryLocation(type, rax.register, offset);
+			System.out.println(fieldLocation);
+
 			translate(statement.getRhs(), fieldLocation, context);
+			context = context.unlockLocation(rax).unlockLocation(fieldLocation);
+
 		} else {
 			//TODO
 			throw new IllegalArgumentException("array assignment not implemented (yet)");

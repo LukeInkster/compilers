@@ -1,0 +1,10 @@
+void f({int x, int y} rec){
+	//rec.y = 3;
+}
+
+void main() {
+	{int x, int y} rec = {x:1, y:2};
+	f(rec);
+	//assert res.x == 1;
+	//assert res.y == 2;
+}

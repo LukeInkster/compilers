@@ -22,17 +22,17 @@ import whilelang.compiler.X86FileWriter;
 
 
 @RunWith(Parameterized.class)
-public class X86ValidTests {	
+public class X86ValidTests {
 	 // you'll need to change this for your platform.
         public final static Target TARGET = Target.LINUX_X86_64; //Target.MACOS_X86_64;
-	
+
 	private final static String RUNTIME_LIBRARY = "src/whilelang/runtime/runtime.c".replace('/',
 			File.separatorChar);
 
 	private static final String WHILE_SRC_DIR = "tests/valid/".replace('/', File.separatorChar);
-	
+
 	private static final String[] IGNORED = {
-		"ArrayAccess_Valid_3",	// int[][]		
+		"ArrayAccess_Valid_3",	// int[][]
 		"ArrayAssign_Valid_3",  // int[][]
 		"ArrayAssign_Valid_4",  // int[][]
 		"ArrayAssign_Valid_10", // int[][]
@@ -47,14 +47,14 @@ public class X86ValidTests {
 		"String_Valid_12",    // string[]
 		"String_Valid_18",    // string[]
 	};
-	
-	private final String testName;	
-	
+
+	private final String testName;
+
 	public X86ValidTests(String testName) {
 		this.testName = testName;
 	}
 
-	private static boolean ignoredTest(String name) {		
+	private static boolean ignoredTest(String name) {
 		for(int i=0;i!=IGNORED.length;++i) {
 			if(IGNORED[i].equals(name)) {
 				return true;
@@ -62,7 +62,7 @@ public class X86ValidTests {
 		}
 		return false;
 	}
-	
+
 	// Here we enumerate all available test cases.
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
@@ -78,16 +78,16 @@ public class X86ValidTests {
 					}
 				}
 			}
-		}		
+		}
 		return testcases;
 	}
-	
+
 	@Test
 	public void valid() throws IOException {
 		compileTest(this.testName);
 		executeTest(WHILE_SRC_DIR,this.testName);
 	}
-	
+
 	protected void compileTest(String testname) throws IOException {
 		String sourceFileName = WHILE_SRC_DIR + testname + ".while";
 		String asmFileName = WHILE_SRC_DIR + testname + ".s";
@@ -98,7 +98,7 @@ public class X86ValidTests {
 		// Second, we need to compile the assembly file with gcc
 		compileWithGcc(WHILE_SRC_DIR, testname, asmFileName, RUNTIME_LIBRARY);
 	}
-	
+
 	public void compileWithGcc(String dir, String target, String... files) {
 		try {
 			String tmp = "gcc -Wno-format -o " + dir + target;
@@ -120,13 +120,13 @@ public class X86ValidTests {
 				System.err
 				.println("============================================================");
 				fail("Problem running gcc to compile test");
-			} 
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail("Problem running gcc to compile test");
 		}
 	}
-	
+
 	public String executeTest(String dir, String executable) {
 		try {
 			Process p = Runtime.getRuntime().exec(dir + executable);
@@ -134,7 +134,7 @@ public class X86ValidTests {
 			StringBuffer sysout = new StringBuffer();
 			new StreamGrabber(p.getErrorStream(), syserr);
 			new StreamGrabber(p.getInputStream(), sysout);
-			int exitCode = p.waitFor();			
+			int exitCode = p.waitFor();
 			System.err
 					.println("============================================================");
 			System.err.println(dir + executable);
@@ -151,8 +151,8 @@ public class X86ValidTests {
 			fail("Problem running native executable");
 			return null;
 		}
-	}	
-	
+	}
+
 	/**
 	 * Grab everything produced by a given input stream until the End-Of-File
 	 * (EOF) is reached. This is implemented as a separate thread to ensure that

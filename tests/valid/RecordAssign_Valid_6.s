@@ -4,12 +4,12 @@ wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
 	subq $16, %rsp
-	subq $16, %rsp
-	movq 24(%rbp), %rax
-	movq %rax, 0(%rsp)
+	movq 24(%rbp), %rbx
+	movq %rbx, 0(%rsp)
+	movq 0(%rsp), %rax
 	addq $16, %rsp
-	movq $1, %rax
-	movq %rax, 0(%rsp)
+	movq $1, %rbx
+	movq %rbx, 0(%rax)
 	movq 24(%rbp), %rax
 	movq %rax, 16(%rbp)
 	jmp label430

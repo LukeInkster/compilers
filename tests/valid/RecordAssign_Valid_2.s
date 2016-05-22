@@ -93,13 +93,9 @@ label390:
 label391:
 	movq %rax, %rdi
 	call assertion
-	subq $16, %rsp
 	movq -16(%rbp), %rax
-	movq %rax, 0(%rsp)
-	movq -8(%rbp), %rax
-	movq %rax, 8(%rsp)
-	movq $1, %rax
-	movq %rax, 0(%rsp)
+	movq $1, %rbx
+	movq %rbx, 0(%rax)
 	subq $32, %rsp
 	movq -16(%rbp), %rax
 	movq %rax, 0(%rsp)

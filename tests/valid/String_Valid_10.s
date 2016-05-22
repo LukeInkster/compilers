@@ -25,11 +25,9 @@ label475:
 label476:
 	movq %rax, %rdi
 	call assertion
-	subq $16, %rsp
 	movq -16(%rbp), %rax
-	movq %rax, 0(%rsp)
-	movq -8(%rbp), %rax
-	movq %rax, 0(%rsp)
+	movq -8(%rbp), %rbx
+	movq %rbx, 0(%rax)
 	subq $16, %rsp
 	movq -16(%rbp), %rax
 	movq %rax, 0(%rsp)
