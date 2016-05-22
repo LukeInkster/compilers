@@ -16,17 +16,17 @@ wl_main:
 	movq 0(%rsp), %rax
 	addq $16, %rsp
 	cmpq $0, %rax
-	jz label84
+	jz label90
 	movq $1, %rax
 	movq %rax, %rdi
 	call assertion
-	jmp label83
-label84:
+	jmp label89
+label90:
 	movq $0, %rax
 	movq %rax, %rdi
 	call assertion
-label83:
-label82:
+label89:
+label88:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

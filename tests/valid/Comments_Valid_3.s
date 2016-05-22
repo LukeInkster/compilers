@@ -6,7 +6,7 @@ wl_main:
 	movq $1, %rax
 	movq %rax, %rdi
 	call assertion
-label95:
+label101:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

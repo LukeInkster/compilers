@@ -7,26 +7,31 @@ wl_f:
 	movq 24(%rbp), %rax
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label691
+	jnz label808
+label806:
 	movq $-1, %rbx
 	movq %rbx, -8(%rbp)
-	jmp label690
-label691:
+	jmp label805
+	jmp label807
+label808:
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label692
+	jnz label810
+label807:
 	movq $-2, %rbx
 	movq %rbx, -8(%rbp)
-	jmp label690
-label692:
+	jmp label805
+	jmp label809
+label810:
+label809:
 	movq $0, %rbx
 	movq %rbx, -8(%rbp)
-label693:
-label690:
+label812:
+label805:
 	movq -8(%rbp), %rax
 	movq %rax, 16(%rbp)
-	jmp label689
-label689:
+	jmp label804
+label804:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -45,12 +50,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label695
+	jnz label815
 	movq $1, %rax
-	jmp label696
-label695:
+	jmp label816
+label815:
 	movq $0, %rax
-label696:
+label816:
 	movq %rax, %rdi
 	call assertion
 	movq $-2, %rax
@@ -65,12 +70,12 @@ label696:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label697
+	jnz label817
 	movq $1, %rax
-	jmp label698
-label697:
+	jmp label818
+label817:
 	movq $0, %rax
-label698:
+label818:
 	movq %rax, %rdi
 	call assertion
 	movq $0, %rax
@@ -85,12 +90,12 @@ label698:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label699
+	jnz label819
 	movq $1, %rax
-	jmp label700
-label699:
+	jmp label820
+label819:
 	movq $0, %rax
-label700:
+label820:
 	movq %rax, %rdi
 	call assertion
 	movq $0, %rax
@@ -105,15 +110,15 @@ label700:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label701
+	jnz label821
 	movq $1, %rax
-	jmp label702
-label701:
+	jmp label822
+label821:
 	movq $0, %rax
-label702:
+label822:
 	movq %rax, %rdi
 	call assertion
-label694:
+label814:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

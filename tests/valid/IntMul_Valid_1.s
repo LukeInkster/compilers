@@ -13,12 +13,12 @@ wl_main:
 	addq %rbx, %rax
 	movq $9, %rbx
 	cmpq %rax, %rbx
-	jnz label336
+	jnz label342
 	movq $1, %rax
-	jmp label337
-label336:
+	jmp label343
+label342:
 	movq $0, %rax
-label337:
+label343:
 	movq %rax, %rdi
 	call assertion
 	movq -8(%rbp), %rax
@@ -28,12 +28,12 @@ label337:
 	imulq %rbx, %rax
 	movq $8, %rbx
 	cmpq %rax, %rbx
-	jnz label338
+	jnz label344
 	movq $1, %rax
-	jmp label339
-label338:
+	jmp label345
+label344:
 	movq $0, %rax
-label339:
+label345:
 	movq %rax, %rdi
 	call assertion
 	movq -8(%rbp), %rax
@@ -41,12 +41,12 @@ label339:
 	imulq %rbx, %rax
 	movq $9, %rbx
 	cmpq %rax, %rbx
-	jnz label340
+	jnz label346
 	movq $1, %rax
-	jmp label341
-label340:
+	jmp label347
+label346:
 	movq $0, %rax
-label341:
+label347:
 	movq %rax, %rdi
 	call assertion
 	movq -8(%rbp), %rax
@@ -55,15 +55,15 @@ label341:
 	imulq %rbx, %rax
 	movq $-6, %rbx
 	cmpq %rax, %rbx
-	jnz label342
+	jnz label348
 	movq $1, %rax
-	jmp label343
-label342:
+	jmp label349
+label348:
 	movq $0, %rax
-label343:
+label349:
 	movq %rax, %rdi
 	call assertion
-label335:
+label341:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

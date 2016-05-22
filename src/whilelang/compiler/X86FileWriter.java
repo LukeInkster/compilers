@@ -379,8 +379,17 @@ public class X86FileWriter {
 			// assigned to into a register. Then create a memory location using
 			// that register as base and translate the rhs directly into that
 			// location.
-			//TODO
-			throw new IllegalArgumentException("record assignment not implemented (yet)");
+
+			Expr.RecordAccess ra = (Expr.RecordAccess) lhs;
+
+			Type.Record type = (Type.Record) unwrap(ra.getSource().attribute(Attribute.Type.class).type);
+			int offset = getFieldOffset(type, ra.getName());
+			System.out.println(offset);
+			MemoryLocation recordLocation = (MemoryLocation) allocateLocation(ra.getSource(), context);
+
+			translate(ra.getSource(), recordLocation, context);
+			MemoryLocation fieldLocation = new MemoryLocation(type, recordLocation.base, offset);
+			translate(statement.getRhs(), fieldLocation, context);
 		} else {
 			//TODO
 			throw new IllegalArgumentException("array assignment not implemented (yet)");
@@ -568,7 +577,6 @@ public class X86FileWriter {
 	 * @param data
 	 */
 	public void translate(Stmt.While statement, Context context) {
-//		throw new IllegalArgumentException("while loops not implemented (yet)");
 		List<Instruction> instructions = context.instructions();
 		String headLabel = freshLabel();
 		String exitLabel = freshLabel();
@@ -620,7 +628,11 @@ public class X86FileWriter {
 		// and it would be better to use a jump table in situations where we can
 		// (e.g. for integer values). However, in the general case (e.g. when
 		// switching on records), we cannot use a jump table anyway.
+		String thisBody = freshLabel();
+		String nextBody = freshLabel();
+		int i = 0;
 		for (Stmt.Case c : statement.getCases()) {
+			i++;
 			String nextLabel = freshLabel();
 			Expr constant = c.getValue();
 			if (constant != null) {
@@ -628,8 +640,14 @@ public class X86FileWriter {
 				translate(c.getValue(), tmps[1], context);
 				bitwiseEquality(tmps[0], tmps[1], nextLabel, context);
 			}
+			instructions.add(new Instruction.Label(thisBody));
 			translate(c.getBody(), context);
+			if (i < statement.getCases().size()){
+				instructions.add(new Instruction.Addr(Instruction.AddrOp.jmp, nextBody));
+			}
 			instructions.add(new Instruction.Label(nextLabel));
+			thisBody = nextBody;
+			nextBody = freshLabel();
 		}
 		// Finally, add the exit label
 		instructions.add(new Instruction.Label(exitLabel));

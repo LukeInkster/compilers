@@ -1,0 +1,6 @@
+void main() {
+}
+
+void f({int x, int y} rec){
+	rec.y = 3;
+}
