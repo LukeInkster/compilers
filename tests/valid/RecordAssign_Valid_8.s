@@ -3,7 +3,9 @@
 wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
-label0:
+	movq $3, %rax
+	movq %rax, 24(%rbp)
+label996:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -22,7 +24,7 @@ wl_main:
 	movq %rax, 8(%rsp)
 	call wl_f
 	addq $16, %rsp
-label1:
+label997:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

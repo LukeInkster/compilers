@@ -6,35 +6,35 @@ wl_f:
 	movq 24(%rbp), %rax
 	leaq str0(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label542
-label540:
+	jnz label537
+label535:
 	movq $0, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label538
-	jmp label541
-label542:
+	jmp label533
+	jmp label536
+label537:
 	leaq str1(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label544
-label541:
+	jnz label539
+label536:
 	movq $1, %rbx
 	movq %rbx, 16(%rbp)
+	jmp label533
 	jmp label538
-	jmp label543
-label544:
+label539:
 	leaq str2(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label546
-label543:
+	jnz label541
+label538:
 	movq $2, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label538
-label546:
-label539:
+	jmp label533
+label541:
+label534:
 	movq $-1, %rax
 	movq %rax, 16(%rbp)
-	jmp label538
-label538:
+	jmp label533
+label533:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -53,12 +53,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label549
+	jnz label544
 	movq $1, %rax
-	jmp label550
-label549:
+	jmp label545
+label544:
 	movq $0, %rax
-label550:
+label545:
 	movq %rax, %rdi
 	call assertion
 	movq $1, %rax
@@ -73,12 +73,12 @@ label550:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label551
+	jnz label546
 	movq $1, %rax
-	jmp label552
-label551:
+	jmp label547
+label546:
 	movq $0, %rax
-label552:
+label547:
 	movq %rax, %rdi
 	call assertion
 	movq $2, %rax
@@ -93,12 +93,12 @@ label552:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label553
+	jnz label548
 	movq $1, %rax
-	jmp label554
-label553:
+	jmp label549
+label548:
 	movq $0, %rax
-label554:
+label549:
 	movq %rax, %rdi
 	call assertion
 	movq $-1, %rax
@@ -113,15 +113,15 @@ label554:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label555
+	jnz label550
 	movq $1, %rax
-	jmp label556
-label555:
+	jmp label551
+label550:
 	movq $0, %rax
-label556:
+label551:
 	movq %rax, %rdi
 	call assertion
-label548:
+label543:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

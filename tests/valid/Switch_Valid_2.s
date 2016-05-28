@@ -9,8 +9,8 @@ wl_main:
 	movq -8(%rbp), %rax
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label700
-label698:
+	jnz label695
+label693:
 	movq $1, %rbx
 	subq $16, %rsp
 	movq %rax, 0(%rsp)
@@ -18,13 +18,13 @@ label698:
 	call assertion
 	movq 0(%rsp), %rax
 	addq $16, %rsp
-	jmp label696
-	jmp label699
-label700:
+	jmp label691
+	jmp label694
+label695:
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label702
-label699:
+	jnz label697
+label694:
 	movq $0, %rbx
 	subq $16, %rsp
 	movq %rax, 0(%rsp)
@@ -32,13 +32,13 @@ label699:
 	call assertion
 	movq 0(%rsp), %rax
 	addq $16, %rsp
-	jmp label696
-label702:
+	jmp label691
 label697:
+label692:
 	movq $0, %rax
 	movq %rax, %rdi
 	call assertion
-label696:
+label691:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

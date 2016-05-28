@@ -3,17 +3,16 @@
 wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
-	movq 16(%rbp), %rax
-	movq $3, %rbx
-	movq %rbx, 8(%rax)
-label946:
+	movq $3, %rax
+	movq %rax, 24(%rbp)
+label962:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
 wl_main:
 	pushq %rbp
 	movq %rsp, %rbp
-label947:
+label963:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

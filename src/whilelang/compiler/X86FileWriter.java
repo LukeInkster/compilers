@@ -382,21 +382,17 @@ public class X86FileWriter {
 			//TODO
 			Expr.RecordAccess ra = (Expr.RecordAccess) lhs;
 
+			MemoryLocation loc = context.getVariableLocation(((Expr.Variable) ra.getSource()).getName());
+
 			Type.Record type = (Type.Record) unwrap(ra.getSource().attribute(Attribute.Type.class).type);
+
+			translate(ra.getSource(), loc, context);
+
 			int offset = getFieldOffset(type, ra.getName());
 
-			RegisterLocation rax = (RegisterLocation)allocateLocation(statement.getRhs(), context);
-			context = context.lockLocation(rax);
+			MemoryLocation fieldLoc = new MemoryLocation(type, loc.base, loc.offset + offset);
 
-			System.out.println(rax.register);
-			translate(ra.getSource(), rax, context);
-
-			MemoryLocation fieldLocation = new MemoryLocation(type, rax.register, offset);
-			System.out.println(fieldLocation);
-
-			translate(statement.getRhs(), fieldLocation, context);
-			context = context.unlockLocation(rax).unlockLocation(fieldLocation);
-
+			translate(statement.getRhs(), fieldLoc, context);
 		} else {
 			//TODO
 			throw new IllegalArgumentException("array assignment not implemented (yet)");
