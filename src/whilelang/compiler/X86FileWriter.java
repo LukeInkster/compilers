@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import jx86.lang.*;
 import whilelang.ast.*;
+import whilelang.ast.Expr.ArrayInitialiser;
 import whilelang.util.*;
 
 public class X86FileWriter {
@@ -379,7 +380,6 @@ public class X86FileWriter {
 			// assigned to into a register. Then create a memory location using
 			// that register as base and translate the rhs directly into that
 			// location.
-			//TODO
 			Expr.RecordAccess ra = (Expr.RecordAccess) lhs;
 
 			MemoryLocation loc = context.getVariableLocation(((Expr.Variable) ra.getSource()).getName());
@@ -394,7 +394,6 @@ public class X86FileWriter {
 
 			translate(statement.getRhs(), fieldLoc, context);
 		} else {
-			//TODO
 			throw new IllegalArgumentException("array assignment not implemented (yet)");
 		}
 	}
@@ -891,6 +890,9 @@ public class X86FileWriter {
 			}
 		} else if (expression instanceof Expr.Variable) {
 			translate((Expr.Variable) expression, target, context);
+		} else if (expression instanceof Expr.ArrayInitialiser){
+			translate((Expr.ArrayInitialiser) expression, (MemoryLocation) target, context);
+			//throw new IllegalArgumentException("Unknown expression encountered: " + expression);
 		} else {
 			throw new IllegalArgumentException("Unknown expression encountered: " + expression);
 		}
@@ -1286,6 +1288,43 @@ public class X86FileWriter {
 		}
 	}
 
+	public void translate(Expr.ArrayInitialiser e, MemoryLocation target, Context context) {
+		List<Instruction> instructions = context.instructions();
+		Type.Array type = (Type.Array) unwrap(e.attribute(Attribute.Type.class).type);
+
+		// Get register to for allocation parameter
+		RegisterLocation alloc = context.selectFreeRegister(type);
+		context = context.lockLocation(alloc);
+
+		// Create space on the stack for the resulting array
+		int requiredSpace = (e.getArguments().size() + 1) * determineWidth(new Type.Int());
+		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.mov, requiredSpace, alloc.register));
+		allocateSpaceOnHeap(alloc.register, context);
+		// Have the target register point at the allocated space
+		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, alloc.register, target.offset, target.base));
+
+		// Get register to store a pointer to where the array starts in the heap
+//		RegisterLocation arr = context.selectFreeRegister(type);
+//		context = context.lockLocation(arr);
+//		instructions.add(new Instruction.ImmIndReg(Instruction.ImmIndRegOp.mov, target.offset, target.base, arr.register));
+
+		// Get register to use in to store the array entries before putting them in the array
+		RegisterLocation arrEntry = context.selectFreeRegister(type);
+		context = context.lockLocation(arrEntry);
+
+		// Add the size of the array to the first index of the array
+		int offset = 0;
+		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.mov, e.getArguments().size(), arrEntry.register));
+		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, target.offset + offset, target.base));
+
+		// Add the values of the array to the other indices
+		for (Expr entry : e.getArguments()){
+			offset += 8;
+			translate(entry, arrEntry, context);
+			instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, target.offset + offset, target.base));
+		}
+	}
+
 	public void translate(Expr.Unary e, RegisterLocation target, Context context) {
 		List<Instruction> instructions = context.instructions();
 
@@ -1302,6 +1341,8 @@ public class X86FileWriter {
 			break;
 		case NEG:
 			instructions.add(new Instruction.Reg(Instruction.RegOp.neg, target.register));
+			break;
+		case LENGTHOF:
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown unary operator: " + e);
@@ -1808,7 +1849,8 @@ public class X86FileWriter {
 	public int determineWidth(Type type) {
 		if (type instanceof Type.Void) {
 			return 0;
-		} else if (type instanceof Type.Bool || type instanceof Type.Char || type instanceof Type.Int) {
+		} else if (type instanceof Type.Bool || type instanceof Type.Char
+				|| type instanceof Type.Int || type instanceof Type.Array) {
 			// The size of a machine word.
 			return target.widthInBytes();
 		} else if (type instanceof Type.Record) {
