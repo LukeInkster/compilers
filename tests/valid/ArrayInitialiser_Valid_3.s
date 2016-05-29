@@ -4,10 +4,36 @@ wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
 	movq 24(%rbp), %rax
+	movq 0(%rax), %rbx
+	incq %rbx
+	movq %rbx, %rcx
+	imulq $8, %rcx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, %rdi
+	call malloc
+	movq %rax, %rcx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	addq $16, %rsp
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rcx, %rdi
+	movq %rax, %rsi
+	movq %rbx, %rdx
+	call intncpy
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	movq %rcx, %rax
 	movq 0(%rax), %rax
 	movq %rax, 16(%rbp)
-	jmp label12
-label12:
+	jmp label73
+label73:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -27,12 +53,12 @@ wl_main:
 	movq -16(%rsp), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
-	jnz label14
+	jnz label75
 	movq $1, %rax
-	jmp label15
-label14:
+	jmp label76
+label75:
 	movq $0, %rax
-label15:
+label76:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -50,12 +76,12 @@ label15:
 	movq -16(%rsp), %rax
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label16
+	jnz label77
 	movq $1, %rax
-	jmp label17
-label16:
+	jmp label78
+label77:
 	movq $0, %rax
-label17:
+label78:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -75,12 +101,12 @@ label17:
 	movq -16(%rsp), %rax
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label18
+	jnz label79
 	movq $1, %rax
-	jmp label19
-label18:
+	jmp label80
+label79:
 	movq $0, %rax
-label19:
+label80:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -102,12 +128,12 @@ label19:
 	movq -16(%rsp), %rax
 	movq $3, %rbx
 	cmpq %rax, %rbx
-	jnz label20
+	jnz label81
 	movq $1, %rax
-	jmp label21
-label20:
+	jmp label82
+label81:
 	movq $0, %rax
-label21:
+label82:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -131,15 +157,15 @@ label21:
 	movq -16(%rsp), %rax
 	movq $4, %rbx
 	cmpq %rax, %rbx
-	jnz label22
+	jnz label83
 	movq $1, %rax
-	jmp label23
-label22:
+	jmp label84
+label83:
 	movq $0, %rax
-label23:
+label84:
 	movq %rax, %rdi
 	call assertion
-label13:
+label74:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

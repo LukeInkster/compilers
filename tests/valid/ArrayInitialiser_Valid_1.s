@@ -16,8 +16,8 @@ wl_f:
 	movq %rbx, 16(%rax)
 	movq 24(%rbp), %rbx
 	movq %rbx, 24(%rax)
-	jmp label10
-label10:
+	jmp label71
+label71:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -37,9 +37,35 @@ wl_main:
 	movq -32(%rsp), %rax
 	movq %rax, -8(%rbp)
 	movq -8(%rbp), %rax
+	movq 0(%rax), %rbx
+	incq %rbx
+	movq %rbx, %rcx
+	imulq $8, %rcx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, %rdi
+	call malloc
+	movq %rax, %rcx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	addq $16, %rsp
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rcx, %rdi
+	movq %rax, %rsi
+	movq %rbx, %rdx
+	call intncpy
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	movq %rcx, %rax
 	movq %rax, %rdi
 	call prnintn
-label11:
+label72:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

@@ -4,32 +4,32 @@ wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
 	subq $16, %rsp
-label958:
+label1050:
 	movq 24(%rbp), %rax
 	movq $0, %rbx
 	cmpq %rbx, %rax
-	jl label959
+	jl label1051
 	movq 24(%rbp), %rax
 	movq $0, %rbx
 	cmpq %rbx, %rax
-	jge label961
+	jge label1053
 	movq $0, %rax
 	movq %rax, 16(%rbp)
-	jmp label957
-	jmp label960
-label961:
+	jmp label1049
+	jmp label1052
+label1053:
 	movq 24(%rbp), %rax
 	movq %rax, -8(%rbp)
-label960:
+label1052:
 	movq -8(%rbp), %rax
 	movq %rax, 16(%rbp)
-	jmp label957
-	jmp label958
-label959:
+	jmp label1049
+	jmp label1050
+label1051:
 	movq $0, %rax
 	movq %rax, 16(%rbp)
-	jmp label957
-label957:
+	jmp label1049
+label1049:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -48,12 +48,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label963
+	jnz label1055
 	movq $1, %rax
-	jmp label964
-label963:
+	jmp label1056
+label1055:
 	movq $0, %rax
-label964:
+label1056:
 	movq %rax, %rdi
 	call assertion
 	movq $10, %rax
@@ -68,12 +68,12 @@ label964:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label965
+	jnz label1057
 	movq $1, %rax
-	jmp label966
-label965:
+	jmp label1058
+label1057:
 	movq $0, %rax
-label966:
+label1058:
 	movq %rax, %rdi
 	call assertion
 	movq $11, %rax
@@ -88,12 +88,12 @@ label966:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label967
+	jnz label1059
 	movq $1, %rax
-	jmp label968
-label967:
+	jmp label1060
+label1059:
 	movq $0, %rax
-label968:
+label1060:
 	movq %rax, %rdi
 	call assertion
 	movq $1212, %rax
@@ -108,12 +108,12 @@ label968:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label969
+	jnz label1061
 	movq $1, %rax
-	jmp label970
-label969:
+	jmp label1062
+label1061:
 	movq $0, %rax
-label970:
+label1062:
 	movq %rax, %rdi
 	call assertion
 	movq $0, %rax
@@ -128,15 +128,15 @@ label970:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label971
+	jnz label1063
 	movq $1, %rax
-	jmp label972
-label971:
+	jmp label1064
+label1063:
 	movq $0, %rax
-label972:
+label1064:
 	movq %rax, %rdi
 	call assertion
-label962:
+label1054:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

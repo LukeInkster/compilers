@@ -6,31 +6,31 @@ wl_f:
 	subq $16, %rsp
 	movq $0, %rax
 	movq %rax, -8(%rbp)
-label974:
+label1066:
 	movq -8(%rbp), %rax
 	movq $10, %rbx
 	cmpq %rbx, %rax
-	jge label975
+	jge label1067
 	movq -8(%rbp), %rax
 	movq $1, %rbx
 	addq %rbx, %rax
 	movq %rax, -8(%rbp)
 	movq $1, %rax
 	cmpq $0, %rax
-	jz label976
-	jmp label975
-	jmp label976
-label976:
+	jz label1068
+	jmp label1067
+	jmp label1068
+label1068:
 	movq -8(%rbp), %rax
 	movq $1, %rbx
 	addq %rbx, %rax
 	movq %rax, -8(%rbp)
-	jmp label974
-label975:
+	jmp label1066
+label1067:
 	movq -8(%rbp), %rax
 	movq %rax, 16(%rbp)
-	jmp label973
-label973:
+	jmp label1065
+label1065:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -47,15 +47,15 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label978
+	jnz label1070
 	movq $1, %rax
-	jmp label979
-label978:
+	jmp label1071
+label1070:
 	movq $0, %rax
-label979:
+label1071:
 	movq %rax, %rdi
 	call assertion
-label977:
+label1069:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

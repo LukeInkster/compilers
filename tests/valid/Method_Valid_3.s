@@ -3,7 +3,7 @@
 wl_nop:
 	pushq %rbp
 	movq %rsp, %rbp
-label393:
+label447:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -13,12 +13,12 @@ wl_id:
 	call wl_nop
 	movq 24(%rbp), %rax
 	movq %rax, 16(%rbp)
-	jmp label394
-label394:
+	jmp label448
+label448:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
-wl_test:
+wl_main:
 	pushq %rbp
 	movq %rsp, %rbp
 	subq $16, %rsp
@@ -29,12 +29,12 @@ wl_test:
 	movq -16(%rsp), %rax
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label396
+	jnz label450
 	movq $1, %rax
-	jmp label397
-label396:
+	jmp label451
+label450:
 	movq $0, %rax
-label397:
+label451:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -45,15 +45,15 @@ label397:
 	movq -16(%rsp), %rax
 	movq $-1, %rbx
 	cmpq %rax, %rbx
-	jnz label398
+	jnz label452
 	movq $1, %rax
-	jmp label399
-label398:
+	jmp label453
+label452:
 	movq $0, %rax
-label399:
+label453:
 	movq %rax, %rdi
 	call assertion
-label395:
+label449:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

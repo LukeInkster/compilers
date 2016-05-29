@@ -6,35 +6,35 @@ wl_f:
 	movq 24(%rbp), %rax
 	leaq str0(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label803
-label801:
+	jnz label860
+label858:
 	movq $0, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label799
-	jmp label802
-label803:
+	jmp label856
+	jmp label859
+label860:
 	leaq str1(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label805
-label802:
+	jnz label862
+label859:
 	movq $1, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label799
-	jmp label804
-label805:
+	jmp label856
+	jmp label861
+label862:
 	leaq str2(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label807
-label804:
+	jnz label864
+label861:
 	movq $2, %rbx
 	movq %rbx, 16(%rbp)
-	jmp label799
-label807:
-label800:
+	jmp label856
+label864:
+label857:
 	movq $3, %rax
 	movq %rax, 16(%rbp)
-	jmp label799
-label799:
+	jmp label856
+label856:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -53,12 +53,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label810
+	jnz label867
 	movq $1, %rax
-	jmp label811
-label810:
+	jmp label868
+label867:
 	movq $0, %rax
-label811:
+label868:
 	movq %rax, %rdi
 	call assertion
 	movq $0, %rax
@@ -73,12 +73,12 @@ label811:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label812
+	jnz label869
 	movq $1, %rax
-	jmp label813
-label812:
+	jmp label870
+label869:
 	movq $0, %rax
-label813:
+label870:
 	movq %rax, %rdi
 	call assertion
 	movq $1, %rax
@@ -93,12 +93,12 @@ label813:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label814
+	jnz label871
 	movq $1, %rax
-	jmp label815
-label814:
+	jmp label872
+label871:
 	movq $0, %rax
-label815:
+label872:
 	movq %rax, %rdi
 	call assertion
 	movq $2, %rax
@@ -113,12 +113,12 @@ label815:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label816
+	jnz label873
 	movq $1, %rax
-	jmp label817
-label816:
+	jmp label874
+label873:
 	movq $0, %rax
-label817:
+label874:
 	movq %rax, %rdi
 	call assertion
 	movq $3, %rax
@@ -133,15 +133,15 @@ label817:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label818
+	jnz label875
 	movq $1, %rax
-	jmp label819
-label818:
+	jmp label876
+label875:
 	movq $0, %rax
-label819:
+label876:
 	movq %rax, %rdi
 	call assertion
-label809:
+label866:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

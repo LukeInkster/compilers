@@ -4,19 +4,90 @@ wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
 	movq 32(%rbp), %rax
+	movq 0(%rax), %rbx
+	incq %rbx
+	movq %rbx, %rcx
+	imulq $8, %rcx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, %rdi
+	call malloc
+	movq %rax, %rcx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	addq $16, %rsp
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rcx, %rdi
+	movq %rax, %rsi
+	movq %rbx, %rdx
+	call intncpy
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	movq %rcx, %rax
 	movq 24(%rbp), %rbx
-	cmpq %rax, %rbx
-	jnz label12
+	movq 0(%rbx), %rcx
+	incq %rcx
+	movq %rcx, %rdx
+	imulq $8, %rdx
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rdx, %rdi
+	call malloc
+	movq %rax, %rdx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rdx, 24(%rsp)
+	movq %rdx, %rdi
+	movq %rbx, %rsi
+	movq %rcx, %rdx
+	call intncpy
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	movq 24(%rsp), %rdx
+	addq $32, %rsp
+	movq %rdx, %rbx
+	movq 0(%rax), %rcx
+	incq %rcx
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rax, %rdi
+	movq %rbx, %rsi
+	movq %rcx, %rdx
+	call intncmp
+	movq %rax, %rdx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	cmpq $0, %rdx
+	jz label42
 	leaq str0(%rip), %rax
 	movq %rax, 16(%rbp)
-	jmp label10
-	jmp label11
-label12:
+	jmp label40
+	jmp label41
+label42:
 	leaq str1(%rip), %rax
 	movq %rax, 16(%rbp)
-	jmp label10
-label11:
-label10:
+	jmp label40
+label41:
+label40:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -25,15 +96,65 @@ wl_g:
 	movq %rsp, %rbp
 	subq $32, %rsp
 	movq 24(%rbp), %rax
-	movq %rax, 8(%rsp)
+	movq 0(%rax), %rbx
+	incq %rbx
+	movq %rbx, %rcx
+	imulq $8, %rcx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, %rdi
+	call malloc
+	movq %rax, %rcx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	addq $16, %rsp
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rcx, %rdi
+	movq %rax, %rsi
+	movq %rbx, %rdx
+	call intncpy
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	movq %rcx, 8(%rsp)
 	movq 32(%rbp), %rax
-	movq %rax, 16(%rsp)
+	movq 0(%rax), %rbx
+	incq %rbx
+	movq %rbx, %rcx
+	imulq $8, %rcx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, %rdi
+	call malloc
+	movq %rax, %rcx
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	addq $16, %rsp
+	subq $32, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rcx, %rdi
+	movq %rax, %rsi
+	movq %rbx, %rdx
+	call intncpy
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	addq $32, %rsp
+	movq %rcx, 16(%rsp)
 	call wl_f
 	addq $32, %rsp
 	movq -32(%rsp), %rax
 	movq %rax, 16(%rbp)
-	jmp label13
-label13:
+	jmp label43
+label43:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -41,106 +162,106 @@ wl_main:
 	pushq %rbp
 	movq %rsp, %rbp
 	subq $32, %rsp
-	movq $24, %rsp
-	movq %rsp, %rdi
+	movq $24, %rax
+	movq %rax, %rdi
 	call malloc
-	movq %rax, %rsp
-	movq 8(%rsp), %rbx
-	movq $2, %rax
-	movq %rax, 0(%rbx)
-	movq $1, %rax
-	movq %rax, 8(%rbx)
-	movq $4, %rax
-	movq %rax, 16(%rbx)
-	movq $24, %rsp
-	movq %rsp, %rdi
+	movq %rax, %rax
+	movq %rax, 8(%rsp)
+	movq $2, %rbx
+	movq %rbx, 0(%rax)
+	movq $1, %rbx
+	movq %rbx, 8(%rax)
+	movq $4, %rbx
+	movq %rbx, 16(%rax)
+	movq $24, %rax
+	movq %rax, %rdi
 	call malloc
-	movq %rax, %rsp
-	movq 16(%rsp), %rbx
-	movq $2, %rax
-	movq %rax, 0(%rbx)
-	movq $1, %rax
-	movq %rax, 8(%rbx)
-	movq $4, %rax
-	movq %rax, 16(%rbx)
+	movq %rax, %rax
+	movq %rax, 16(%rsp)
+	movq $2, %rbx
+	movq %rbx, 0(%rax)
+	movq $1, %rbx
+	movq %rbx, 8(%rax)
+	movq $4, %rbx
+	movq %rbx, 16(%rax)
 	call wl_g
 	addq $32, %rsp
 	movq -32(%rsp), %rax
 	leaq str0(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label15
+	jnz label45
 	movq $1, %rax
-	jmp label16
-label15:
+	jmp label46
+label45:
 	movq $0, %rax
-label16:
+label46:
 	movq %rax, %rdi
 	call assertion
 	subq $32, %rsp
-	movq $24, %rsp
-	movq %rsp, %rdi
+	movq $24, %rax
+	movq %rax, %rdi
 	call malloc
-	movq %rax, %rsp
-	movq 8(%rsp), %rbx
-	movq $2, %rax
-	movq %rax, 0(%rbx)
-	movq $1, %rax
-	movq %rax, 8(%rbx)
-	movq $42, %rax
-	movq %rax, 16(%rbx)
-	movq $24, %rsp
-	movq %rsp, %rdi
+	movq %rax, %rax
+	movq %rax, 8(%rsp)
+	movq $2, %rbx
+	movq %rbx, 0(%rax)
+	movq $1, %rbx
+	movq %rbx, 8(%rax)
+	movq $42, %rbx
+	movq %rbx, 16(%rax)
+	movq $24, %rax
+	movq %rax, %rdi
 	call malloc
-	movq %rax, %rsp
-	movq 16(%rsp), %rbx
-	movq $2, %rax
-	movq %rax, 0(%rbx)
-	movq $1, %rax
-	movq %rax, 8(%rbx)
-	movq $4, %rax
-	movq %rax, 16(%rbx)
+	movq %rax, %rax
+	movq %rax, 16(%rsp)
+	movq $2, %rbx
+	movq %rbx, 0(%rax)
+	movq $1, %rbx
+	movq %rbx, 8(%rax)
+	movq $4, %rbx
+	movq %rbx, 16(%rax)
 	call wl_g
 	addq $32, %rsp
 	movq -32(%rsp), %rax
 	leaq str1(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label17
+	jnz label47
 	movq $1, %rax
-	jmp label18
-label17:
+	jmp label48
+label47:
 	movq $0, %rax
-label18:
+label48:
 	movq %rax, %rdi
 	call assertion
 	subq $32, %rsp
-	movq $8, %rsp
-	movq %rsp, %rdi
+	movq $8, %rax
+	movq %rax, %rdi
 	call malloc
-	movq %rax, %rsp
-	movq 8(%rsp), %rbx
-	movq $0, %rax
-	movq %rax, 0(%rbx)
-	movq $8, %rsp
-	movq %rsp, %rdi
+	movq %rax, %rax
+	movq %rax, 8(%rsp)
+	movq $0, %rbx
+	movq %rbx, 0(%rax)
+	movq $8, %rax
+	movq %rax, %rdi
 	call malloc
-	movq %rax, %rsp
-	movq 16(%rsp), %rbx
-	movq $0, %rax
-	movq %rax, 0(%rbx)
+	movq %rax, %rax
+	movq %rax, 16(%rsp)
+	movq $0, %rbx
+	movq %rbx, 0(%rax)
 	call wl_g
 	addq $32, %rsp
 	movq -32(%rsp), %rax
 	leaq str0(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label19
+	jnz label49
 	movq $1, %rax
-	jmp label20
-label19:
+	jmp label50
+label49:
 	movq $0, %rax
-label20:
+label50:
 	movq %rax, %rdi
 	call assertion
-label14:
+label44:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

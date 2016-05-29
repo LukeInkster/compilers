@@ -5,8 +5,8 @@ wl_pred:
 	movq %rsp, %rbp
 	movq $0, %rax
 	movq %rax, 16(%rbp)
-	jmp label122
-label122:
+	jmp label176
+label176:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -19,15 +19,15 @@ wl_main:
 	movq -16(%rsp), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
-	jnz label124
+	jnz label178
 	movq $1, %rax
-	jmp label125
-label124:
+	jmp label179
+label178:
 	movq $0, %rax
-label125:
+label179:
 	movq %rax, %rdi
 	call assertion
-label123:
+label177:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
