@@ -19,17 +19,18 @@ wl_main:
 	movq %rax, %rdi
 	call prnintn
 	movq -8(%rbp), %rax
+	movq 0(%rax), %rax
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label15
+	jnz label25
 	movq $1, %rax
-	jmp label16
-label15:
+	jmp label26
+label25:
 	movq $0, %rax
-label16:
+label26:
 	movq %rax, %rdi
 	call assertion
-label14:
+label24:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

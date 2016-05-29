@@ -1,0 +1,4 @@
+void main() {
+    int[] rs = [1;3];
+	assert |rs| == 3;
+}

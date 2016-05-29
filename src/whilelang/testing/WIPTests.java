@@ -35,6 +35,10 @@ public class WIPTests {
 		"ArrayInitialiser_Valid_1",
 		"ArrayInitialiser_Valid_3",
 		"ArrayInitialiser_Valid_4",
+		"ArrayGenerator_Valid_1",
+		"ArrayGenerator_Valid_2",
+		"ArrayGenerator_Valid_3",
+		"ArrayGenerator_Valid_4",
 	};
 
 	private final String testName;

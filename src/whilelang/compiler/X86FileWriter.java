@@ -897,11 +897,10 @@ public class X86FileWriter {
 			translate((Expr.Variable) expression, target, context);
 		} else if (expression instanceof Expr.ArrayInitialiser) {
 			translate((Expr.ArrayInitialiser) expression, (MemoryLocation) target, context);
-			//throw new IllegalArgumentException("Unknown expression encountered: " + expression);
 		} else if (expression instanceof Expr.IndexOf) {
 			translate((Expr.IndexOf) expression, target, context);
 		} else if (expression instanceof Expr.ArrayGenerator) {
-			translate((Expr.ArrayGenerator) expression, target, context);
+			translate((Expr.ArrayGenerator) expression, (MemoryLocation) target, context);
 		} else {
 			throw new IllegalArgumentException("Unknown expression encountered: " + expression);
 		}
@@ -1303,10 +1302,35 @@ public class X86FileWriter {
 		}
 	}
 
-	private void translate(ArrayGenerator expression, Location target, Context context) {
-		// TODO Auto-generated method stub
-		throw new InvalidParameterException("Array generator not implemented");
+	private void translate(ArrayGenerator e, MemoryLocation target, Context context) {
+		List<Instruction> instructions = context.instructions();
+		Type.Array type = (Type.Array) unwrap(e.attribute(Attribute.Type.class).type);
 
+		// Put the value in a register
+		RegisterLocation value = context.selectFreeRegister(type);
+		translate(e.getValue(), value, context);
+		context = context.lockLocation(value);
+
+		// Put the size in a register
+		RegisterLocation size = context.selectFreeRegister(type);
+		translate(e.getSize(), size, context);
+		context = context.lockLocation(size);
+
+		// Get register to for allocation parameter, then pass it to heap allocation
+		RegisterLocation alloc = context.selectFreeRegister(type);
+		instructions.add(new Instruction.RegReg(Instruction.RegRegOp.mov, size.register, alloc.register));
+		allocateSpaceOnHeap(alloc.register, context);
+		context = context.lockLocation(alloc);
+
+		// Have the target register point at the allocated space
+		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, alloc.register, target.offset, target.base));
+
+		// Put the size of the array in the first index
+		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, size.register, 0, alloc.register));
+
+		// Bump the register from the size to the first value then call fill
+		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.add, 8, alloc.register));
+		makeExternalMethodCall("intnfill", context, null, alloc.register, size.register, value.register);
 	}
 
 	public void translate(Expr.ArrayInitialiser e, MemoryLocation target, Context context) {
@@ -1317,17 +1341,13 @@ public class X86FileWriter {
 		RegisterLocation alloc = context.selectFreeRegister(type);
 
 		// Create space on the stack for the resulting array
-		int requiredSpace = (e.getArguments().size() + 1) * determineWidth(new Type.Int());
+		int intSize = determineWidth(new Type.Int());
+		int requiredSpace = (e.getArguments().size() + 1) * intSize;
 		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.mov, requiredSpace, alloc.register));
 		allocateSpaceOnHeap(alloc.register, context);
 		context = context.lockLocation(alloc);
 		// Have the target register point at the allocated space
 		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, alloc.register, target.offset, target.base));
-
-		// Get register to store a pointer to where the array starts in the heap
-//		RegisterLocation arr = context.selectFreeRegister(type);
-//		context = context.lockLocation(arr);
-//		instructions.add(new Instruction.ImmIndReg(Instruction.ImmIndRegOp.mov, target.offset, target.base, arr.register));
 
 		// Get register to use in to store the array entries before putting them in the array
 		RegisterLocation arrEntry = context.selectFreeRegister(type);
@@ -1340,7 +1360,7 @@ public class X86FileWriter {
 
 		// Add the values of the array to the other indices
 		for (Expr entry : e.getArguments()){
-			offset += 8;
+			offset += intSize;
 			translate(entry, arrEntry, context);
 			instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, offset, alloc.register));
 		}
@@ -1364,6 +1384,7 @@ public class X86FileWriter {
 			instructions.add(new Instruction.Reg(Instruction.RegOp.neg, target.register));
 			break;
 		case LENGTHOF:
+			instructions.add(new Instruction.ImmIndReg(Instruction.ImmIndRegOp.mov, 0, target.register, target.register));
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown unary operator: " + e);

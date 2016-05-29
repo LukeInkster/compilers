@@ -16,8 +16,8 @@ wl_f:
 	movq %rbx, 16(%rax)
 	movq 24(%rbp), %rbx
 	movq %rbx, 24(%rax)
-	jmp label0
-label0:
+	jmp label10
+label10:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -39,7 +39,7 @@ wl_main:
 	movq -8(%rbp), %rax
 	movq %rax, %rdi
 	call prnintn
-label1:
+label11:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
