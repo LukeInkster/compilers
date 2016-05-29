@@ -15,16 +15,12 @@ wl_main:
 	movq %rsp, %rbp
 	subq $16, %rsp
 	movq $8, %rax
-	subq $16, %rsp
-	movq %rax, 0(%rsp)
 	movq %rax, %rdi
 	call malloc
 	movq %rax, %rax
-	movq 0(%rsp), %rax
-	addq $16, %rsp
 	movq %rax, 8(%rsp)
 	movq $0, %rbx
-	movq %rbx, 8(%rsp)
+	movq %rbx, 0(%rax)
 	call wl_f
 	addq $16, %rsp
 	movq -16(%rsp), %rax
@@ -40,18 +36,14 @@ label5:
 	call assertion
 	subq $16, %rsp
 	movq $16, %rax
-	subq $16, %rsp
-	movq %rax, 0(%rsp)
 	movq %rax, %rdi
 	call malloc
 	movq %rax, %rax
-	movq 0(%rsp), %rax
-	addq $16, %rsp
 	movq %rax, 8(%rsp)
 	movq $1, %rbx
-	movq %rbx, 8(%rsp)
+	movq %rbx, 0(%rax)
 	movq $5, %rbx
-	movq %rbx, 16(%rsp)
+	movq %rbx, 8(%rax)
 	call wl_f
 	addq $16, %rsp
 	movq -16(%rsp), %rax
@@ -67,20 +59,16 @@ label7:
 	call assertion
 	subq $16, %rsp
 	movq $24, %rax
-	subq $16, %rsp
-	movq %rax, 0(%rsp)
 	movq %rax, %rdi
 	call malloc
 	movq %rax, %rax
-	movq 0(%rsp), %rax
-	addq $16, %rsp
 	movq %rax, 8(%rsp)
 	movq $2, %rbx
-	movq %rbx, 8(%rsp)
+	movq %rbx, 0(%rax)
 	movq $5, %rbx
-	movq %rbx, 16(%rsp)
+	movq %rbx, 8(%rax)
 	movq $5, %rbx
-	movq %rbx, 24(%rsp)
+	movq %rbx, 16(%rax)
 	call wl_f
 	addq $16, %rsp
 	movq -16(%rsp), %rax
@@ -96,22 +84,18 @@ label9:
 	call assertion
 	subq $16, %rsp
 	movq $32, %rax
-	subq $16, %rsp
-	movq %rax, 0(%rsp)
 	movq %rax, %rdi
 	call malloc
 	movq %rax, %rax
-	movq 0(%rsp), %rax
-	addq $16, %rsp
 	movq %rax, 8(%rsp)
 	movq $3, %rbx
-	movq %rbx, 8(%rsp)
+	movq %rbx, 0(%rax)
 	movq $5, %rbx
-	movq %rbx, 16(%rsp)
+	movq %rbx, 8(%rax)
 	movq $5, %rbx
-	movq %rbx, 24(%rsp)
+	movq %rbx, 16(%rax)
 	movq $5, %rbx
-	movq %rbx, 32(%rsp)
+	movq %rbx, 24(%rax)
 	call wl_f
 	addq $16, %rsp
 	movq -16(%rsp), %rax
@@ -127,24 +111,20 @@ label11:
 	call assertion
 	subq $16, %rsp
 	movq $40, %rax
-	subq $16, %rsp
-	movq %rax, 0(%rsp)
 	movq %rax, %rdi
 	call malloc
 	movq %rax, %rax
-	movq 0(%rsp), %rax
-	addq $16, %rsp
 	movq %rax, 8(%rsp)
 	movq $4, %rbx
-	movq %rbx, 8(%rsp)
+	movq %rbx, 0(%rax)
 	movq $5, %rbx
-	movq %rbx, 16(%rsp)
+	movq %rbx, 8(%rax)
 	movq $5, %rbx
-	movq %rbx, 24(%rsp)
+	movq %rbx, 16(%rax)
 	movq $5, %rbx
-	movq %rbx, 32(%rsp)
+	movq %rbx, 24(%rax)
 	movq $5, %rbx
-	movq %rbx, 40(%rsp)
+	movq %rbx, 32(%rax)
 	call wl_f
 	addq $16, %rsp
 	movq -16(%rsp), %rax

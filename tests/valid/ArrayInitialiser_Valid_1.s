@@ -4,22 +4,18 @@ wl_f:
 	pushq %rbp
 	movq %rsp, %rbp
 	movq $32, %rax
-	subq $16, %rsp
-	movq %rax, 0(%rsp)
 	movq %rax, %rdi
 	call malloc
 	movq %rax, %rax
-	movq 0(%rsp), %rax
-	addq $16, %rsp
 	movq %rax, 16(%rbp)
 	movq $3, %rbx
-	movq %rbx, 16(%rbp)
+	movq %rbx, 0(%rax)
 	movq 40(%rbp), %rbx
-	movq %rbx, 24(%rbp)
+	movq %rbx, 8(%rax)
 	movq 32(%rbp), %rbx
-	movq %rbx, 32(%rbp)
+	movq %rbx, 16(%rax)
 	movq 24(%rbp), %rbx
-	movq %rbx, 40(%rbp)
+	movq %rbx, 24(%rax)
 	jmp label0
 label0:
 	movq %rbp, %rsp
@@ -40,6 +36,9 @@ wl_main:
 	addq $32, %rsp
 	movq -32(%rsp), %rax
 	movq %rax, -8(%rbp)
+	movq -8(%rbp), %rax
+	movq %rax, %rdi
+	call prnintn
 label1:
 	movq %rbp, %rsp
 	popq %rbp

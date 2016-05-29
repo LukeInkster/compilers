@@ -1,5 +1,6 @@
 package whilelang.compiler;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,9 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.activity.InvalidActivityException;
+
 import jx86.lang.*;
 import whilelang.ast.*;
+import whilelang.ast.Expr.ArrayGenerator;
 import whilelang.ast.Expr.ArrayInitialiser;
+import whilelang.ast.Expr.IndexOf;
 import whilelang.util.*;
 
 public class X86FileWriter {
@@ -890,12 +895,22 @@ public class X86FileWriter {
 			}
 		} else if (expression instanceof Expr.Variable) {
 			translate((Expr.Variable) expression, target, context);
-		} else if (expression instanceof Expr.ArrayInitialiser){
+		} else if (expression instanceof Expr.ArrayInitialiser) {
 			translate((Expr.ArrayInitialiser) expression, (MemoryLocation) target, context);
 			//throw new IllegalArgumentException("Unknown expression encountered: " + expression);
+		} else if (expression instanceof Expr.IndexOf) {
+			translate((Expr.IndexOf) expression, target, context);
+		} else if (expression instanceof Expr.ArrayGenerator) {
+			translate((Expr.ArrayGenerator) expression, target, context);
 		} else {
 			throw new IllegalArgumentException("Unknown expression encountered: " + expression);
 		}
+	}
+
+	private void translate(IndexOf expression, Location target, Context context) {
+		// TODO Auto-generated method stub
+		throw new IllegalArgumentException("Unknown expression encountered: " + expression);
+
 	}
 
 	/**
@@ -1288,18 +1303,24 @@ public class X86FileWriter {
 		}
 	}
 
+	private void translate(ArrayGenerator expression, Location target, Context context) {
+		// TODO Auto-generated method stub
+		throw new InvalidParameterException("Array generator not implemented");
+
+	}
+
 	public void translate(Expr.ArrayInitialiser e, MemoryLocation target, Context context) {
 		List<Instruction> instructions = context.instructions();
 		Type.Array type = (Type.Array) unwrap(e.attribute(Attribute.Type.class).type);
 
 		// Get register to for allocation parameter
 		RegisterLocation alloc = context.selectFreeRegister(type);
-		context = context.lockLocation(alloc);
 
 		// Create space on the stack for the resulting array
 		int requiredSpace = (e.getArguments().size() + 1) * determineWidth(new Type.Int());
 		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.mov, requiredSpace, alloc.register));
 		allocateSpaceOnHeap(alloc.register, context);
+		context = context.lockLocation(alloc);
 		// Have the target register point at the allocated space
 		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, alloc.register, target.offset, target.base));
 
@@ -1315,13 +1336,13 @@ public class X86FileWriter {
 		// Add the size of the array to the first index of the array
 		int offset = 0;
 		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.mov, e.getArguments().size(), arrEntry.register));
-		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, target.offset + offset, target.base));
+		instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, offset, alloc.register));
 
 		// Add the values of the array to the other indices
 		for (Expr entry : e.getArguments()){
 			offset += 8;
 			translate(entry, arrEntry, context);
-			instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, target.offset + offset, target.base));
+			instructions.add(new Instruction.RegImmInd(Instruction.RegImmIndOp.mov, arrEntry.register, offset, alloc.register));
 		}
 	}
 

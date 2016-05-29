@@ -34,6 +34,7 @@ public class WIPTests {
 	private static final String[] INCLUDED = {
 		"ArrayInitialiser_Valid_1",
 		"ArrayInitialiser_Valid_3",
+		"ArrayInitialiser_Valid_4",
 	};
 
 	private final String testName;
