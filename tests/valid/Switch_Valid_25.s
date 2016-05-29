@@ -8,16 +8,16 @@ wl_f:
 	movq %rax, -8(%rbp)
 	movq 24(%rbp), %rax
 	movq %rax, -16(%rbp)
-label1111:
+label1139:
 	movq -16(%rbp), %rax
 	movq $10, %rbx
 	cmpq %rbx, %rax
-	jge label1112
+	jge label1140
 	movq -16(%rbp), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
-	jnz label1116
-label1114:
+	jnz label1144
+label1142:
 	movq -8(%rbp), %rbx
 	movq $1, %rcx
 	addq %rcx, %rbx
@@ -26,50 +26,50 @@ label1114:
 	movq $1, %rcx
 	addq %rcx, %rbx
 	movq %rbx, -16(%rbp)
-	jmp label1111
-	jmp label1115
-label1116:
+	jmp label1139
+	jmp label1143
+label1144:
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label1118
-label1115:
+	jnz label1146
+label1143:
 	movq -8(%rbp), %rbx
 	movq $10, %rcx
 	addq %rcx, %rbx
 	movq %rbx, -8(%rbp)
-	jmp label1117
-label1118:
+	jmp label1145
+label1146:
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label1120
-label1117:
+	jnz label1148
+label1145:
 	movq -8(%rbp), %rbx
 	movq $100, %rcx
 	addq %rcx, %rbx
 	movq %rbx, -8(%rbp)
-	jmp label1113
-	jmp label1119
-label1120:
+	jmp label1141
+	jmp label1147
+label1148:
 	movq $3, %rbx
 	cmpq %rax, %rbx
-	jnz label1122
-label1119:
+	jnz label1150
+label1147:
 	movq -8(%rbp), %rbx
 	movq $1000, %rcx
 	addq %rcx, %rbx
 	movq %rbx, -8(%rbp)
 	movq -8(%rbp), %rbx
 	movq %rbx, 16(%rbp)
-	jmp label1110
-	jmp label1121
-label1122:
-label1121:
+	jmp label1138
+	jmp label1149
+label1150:
+label1149:
 	movq -8(%rbp), %rbx
 	movq $10000, %rcx
 	addq %rcx, %rbx
 	movq %rbx, -8(%rbp)
-label1124:
-label1113:
+label1152:
+label1141:
 	movq -16(%rbp), %rax
 	movq $1, %rbx
 	addq %rbx, %rax
@@ -77,16 +77,16 @@ label1113:
 	movq -16(%rbp), %rax
 	movq $5, %rbx
 	cmpq %rax, %rbx
-	jnz label1126
-	jmp label1112
-	jmp label1126
-label1126:
-	jmp label1111
-label1112:
+	jnz label1154
+	jmp label1140
+	jmp label1154
+label1154:
+	jmp label1139
+label1140:
 	movq -8(%rbp), %rax
 	movq %rax, 16(%rbp)
-	jmp label1110
-label1110:
+	jmp label1138
+label1138:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -101,12 +101,12 @@ wl_main:
 	movq -16(%rsp), %rax
 	movq $1211, %rbx
 	cmpq %rax, %rbx
-	jnz label1128
+	jnz label1156
 	movq $1, %rax
-	jmp label1129
-label1128:
+	jmp label1157
+label1156:
 	movq $0, %rax
-label1129:
+label1157:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -117,12 +117,12 @@ label1129:
 	movq -16(%rsp), %rax
 	movq $1210, %rbx
 	cmpq %rax, %rbx
-	jnz label1130
+	jnz label1158
 	movq $1, %rax
-	jmp label1131
-label1130:
+	jmp label1159
+label1158:
 	movq $0, %rax
-label1131:
+label1159:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -133,12 +133,12 @@ label1131:
 	movq -16(%rsp), %rax
 	movq $1100, %rbx
 	cmpq %rax, %rbx
-	jnz label1132
+	jnz label1160
 	movq $1, %rax
-	jmp label1133
-label1132:
+	jmp label1161
+label1160:
 	movq $0, %rax
-label1133:
+label1161:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -149,12 +149,12 @@ label1133:
 	movq -16(%rsp), %rax
 	movq $1000, %rbx
 	cmpq %rax, %rbx
-	jnz label1134
+	jnz label1162
 	movq $1, %rax
-	jmp label1135
-label1134:
+	jmp label1163
+label1162:
 	movq $0, %rax
-label1135:
+label1163:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -165,12 +165,12 @@ label1135:
 	movq -16(%rsp), %rax
 	movq $10000, %rbx
 	cmpq %rax, %rbx
-	jnz label1136
+	jnz label1164
 	movq $1, %rax
-	jmp label1137
-label1136:
+	jmp label1165
+label1164:
 	movq $0, %rax
-label1137:
+label1165:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -181,12 +181,12 @@ label1137:
 	movq -16(%rsp), %rax
 	movq $50000, %rbx
 	cmpq %rax, %rbx
-	jnz label1138
+	jnz label1166
 	movq $1, %rax
-	jmp label1139
-label1138:
+	jmp label1167
+label1166:
 	movq $0, %rax
-label1139:
+label1167:
 	movq %rax, %rdi
 	call assertion
 	subq $16, %rsp
@@ -197,15 +197,15 @@ label1139:
 	movq -16(%rsp), %rax
 	movq $40000, %rbx
 	cmpq %rax, %rbx
-	jnz label1140
+	jnz label1168
 	movq $1, %rax
-	jmp label1141
-label1140:
+	jmp label1169
+label1168:
 	movq $0, %rax
-label1141:
+label1169:
 	movq %rax, %rdi
 	call assertion
-label1127:
+label1155:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

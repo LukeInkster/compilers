@@ -106,17 +106,17 @@ wl_main:
 	movq 16(%rsp), %rcx
 	addq $32, %rsp
 	cmpq $0, %rdx
-	jz label1160
+	jz label1188
 	movq $1, %rax
-	jmp label1161
-label1160:
+	jmp label1189
+label1188:
 	movq $0, %rax
-label1161:
+label1189:
 	notq %rax
 	andq $1, %rax
 	movq %rax, %rdi
 	call assertion
-label1159:
+label1187:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

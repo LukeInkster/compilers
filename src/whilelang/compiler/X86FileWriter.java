@@ -1,6 +1,5 @@
 package whilelang.compiler;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,15 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.activity.InvalidActivityException;
-
-import jx86.lang.*;
-import whilelang.ast.*;
+import jx86.lang.Constant;
+import jx86.lang.Instruction;
+import jx86.lang.Register;
+import jx86.lang.Target;
+import jx86.lang.X86File;
+import whilelang.ast.Attribute;
+import whilelang.ast.Expr;
 import whilelang.ast.Expr.ArrayGenerator;
-import whilelang.ast.Expr.ArrayInitialiser;
 import whilelang.ast.Expr.Binary;
 import whilelang.ast.Expr.IndexOf;
-import whilelang.util.*;
+import whilelang.ast.Stmt;
+import whilelang.ast.Type;
+import whilelang.ast.WhileFile;
+import whilelang.util.Pair;
 
 public class X86FileWriter {
 
@@ -1208,9 +1212,29 @@ public class X86FileWriter {
 				}
 				instructions.add(new Instruction.AddrRegReg(Instruction.AddrRegRegOp.lea, label, HIP, tmp.register));
 			} else if (value instanceof ArrayList){
-				ArrayList i = (ArrayList<Integer>) value;
+				ArrayList<Integer> i = (ArrayList<Integer>) value;
+				System.out.println(value);
+				List<Constant> constants = context.constants();
+
+//				String label = null;
+//				for (Constant c : constants) {
+//					if (c instanceof Constant.Quad) {
+//						Constant.Quad quad = (Constant.Quad) c;
+//						if (quad.value) {
+//							// match
+//							label = str.label;
+//							break;
+//						}
+//					}
+//				}
+//				if (label == null) {
+//					// We didn't find a match, so allocate a new string constant
+//					label = "str" + constants.size();
+//					constants.add(new Constant.String(label, i));
+//				}
+//				instructions.add(new Instruction.AddrRegReg(Instruction.AddrRegRegOp.lea, label, HIP, tmp.register));
 //				instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.mov, i, tmp.register));
-				throw new IllegalArgumentException("Switching on arrays not implemented yet");
+				//throw new IllegalArgumentException("Switching on arrays not implemented yet");
 			}
 			else {
 				throw new IllegalArgumentException("Unknown constant encountered: " + value);
@@ -1389,7 +1413,7 @@ public class X86FileWriter {
 
 	private void translate(ArrayGenerator e, Location target, Context context) {
 		List<Instruction> instructions = context.instructions();
-		Type.Array type = (Type.Array) unwrap(e.attribute(Attribute.Type.class).type);
+		Type type = unwrap(e.attribute(Attribute.Type.class).type);
 
 		// Put the size in a register
 		RegisterLocation size = context.selectFreeRegister(type);
@@ -1399,7 +1423,7 @@ public class X86FileWriter {
 		// Get register to for allocation parameter, then pass it to heap allocation
 		RegisterLocation alloc = context.selectFreeRegister(type);
 		instructions.add(new Instruction.RegReg(Instruction.RegRegOp.mov, size.register, alloc.register));
-		instructions.add(new Instruction.Reg(Instruction.RegOp.inc, alloc.register)); //Add on for size at the start
+		instructions.add(new Instruction.Reg(Instruction.RegOp.inc, alloc.register)); //Add one for size at the start
 		instructions.add(new Instruction.ImmReg(Instruction.ImmRegOp.imul, 8, alloc.register)); //multiply by 8 bytes per int
 		allocateSpaceOnHeap(alloc.register, context);
 		context = context.lockLocation(alloc);

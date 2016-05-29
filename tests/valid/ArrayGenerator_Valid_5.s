@@ -41,7 +41,7 @@ wl_main:
 	movq %rbx, 0(%rax)
 	movq $1, %rbx
 	movq %rbx, 8(%rax)
-label1168:
+label1196:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
