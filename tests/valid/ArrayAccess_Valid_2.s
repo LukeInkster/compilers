@@ -83,15 +83,15 @@ wl_main:
 	movq %rcx, %rax
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label1194
+	jnz label1199
 	movq $1, %rax
-	jmp label1195
-label1194:
+	jmp label1200
+label1199:
 	movq $0, %rax
-label1195:
+label1200:
 	movq %rax, %rdi
 	call assertion
-label1193:
+label1198:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

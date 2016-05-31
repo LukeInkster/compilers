@@ -6,45 +6,45 @@ wl_f:
 	movq 24(%rbp), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
-	jnz label1119
-label1117:
-	movq 24(%rbp), %rbx
-	movq $1, %rcx
-	addq %rcx, %rbx
-	movq %rbx, 24(%rbp)
-	jmp label1118
-label1119:
+	jnz label1124
+label1122:
+	movq 24(%rbp), %rcx
+	movq $1, %rdx
+	addq %rdx, %rcx
+	movq %rcx, 24(%rbp)
+	jmp label1123
+label1124:
 	movq $1, %rbx
 	cmpq %rax, %rbx
-	jnz label1121
-label1118:
-	movq 24(%rbp), %rbx
-	movq $1, %rcx
-	addq %rcx, %rbx
-	movq %rbx, 24(%rbp)
-	jmp label1120
-label1121:
+	jnz label1126
+label1123:
+	movq 24(%rbp), %rcx
+	movq $1, %rdx
+	addq %rdx, %rcx
+	movq %rcx, 24(%rbp)
+	jmp label1125
+label1126:
 	movq $2, %rbx
 	cmpq %rax, %rbx
-	jnz label1123
-label1120:
-	movq 24(%rbp), %rbx
-	movq $1, %rcx
-	addq %rcx, %rbx
-	movq %rbx, 24(%rbp)
-	jmp label1122
-label1123:
-label1122:
-	movq 24(%rbp), %rbx
-	movq $1, %rcx
-	addq %rcx, %rbx
-	movq %rbx, 24(%rbp)
+	jnz label1128
 label1125:
-label1116:
+	movq 24(%rbp), %rcx
+	movq $1, %rdx
+	addq %rdx, %rcx
+	movq %rcx, 24(%rbp)
+	jmp label1127
+label1128:
+label1127:
+	movq 24(%rbp), %rcx
+	movq $1, %rdx
+	addq %rdx, %rcx
+	movq %rcx, 24(%rbp)
+label1130:
+label1121:
 	movq 24(%rbp), %rax
 	movq %rax, 16(%rbp)
-	jmp label1115
-label1115:
+	jmp label1120
+label1120:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -63,12 +63,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label1128
+	jnz label1133
 	movq $1, %rax
-	jmp label1129
-label1128:
+	jmp label1134
+label1133:
 	movq $0, %rax
-label1129:
+label1134:
 	movq %rax, %rdi
 	call assertion
 	movq $4, %rax
@@ -83,12 +83,12 @@ label1129:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label1130
+	jnz label1135
 	movq $1, %rax
-	jmp label1131
-label1130:
+	jmp label1136
+label1135:
 	movq $0, %rax
-label1131:
+label1136:
 	movq %rax, %rdi
 	call assertion
 	movq $4, %rax
@@ -103,12 +103,12 @@ label1131:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label1132
+	jnz label1137
 	movq $1, %rax
-	jmp label1133
-label1132:
+	jmp label1138
+label1137:
 	movq $0, %rax
-label1133:
+label1138:
 	movq %rax, %rdi
 	call assertion
 	movq $4, %rax
@@ -123,15 +123,15 @@ label1133:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label1134
+	jnz label1139
 	movq $1, %rax
-	jmp label1135
-label1134:
+	jmp label1140
+label1139:
 	movq $0, %rax
-label1135:
+label1140:
 	movq %rax, %rdi
 	call assertion
-label1127:
+label1132:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

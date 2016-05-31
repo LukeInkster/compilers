@@ -88,31 +88,37 @@ wl_main:
 	movq 24(%rsp), %rdx
 	addq $32, %rsp
 	movq %rdx, %rbx
-	movq 0(%rax), %rcx
-	incq %rcx
-	subq $32, %rsp
+	movq %rax, %rcx
+	movq %rbx, %rdx
+	movq 0(%rcx), %rdi
+	incq %rdi
+	subq $48, %rsp
 	movq %rax, 0(%rsp)
 	movq %rbx, 8(%rsp)
 	movq %rcx, 16(%rsp)
-	movq %rax, %rdi
-	movq %rbx, %rsi
+	movq %rdx, 24(%rsp)
+	movq %rdi, 32(%rsp)
+	xchgq %rcx, %rdi
+	movq %rdx, %rsi
 	movq %rcx, %rdx
 	call intncmp
-	movq %rax, %rdx
+	movq %rax, %rsi
 	movq 0(%rsp), %rax
 	movq 8(%rsp), %rbx
 	movq 16(%rsp), %rcx
-	addq $32, %rsp
-	cmpq $0, %rdx
-	jz label1182
+	movq 24(%rsp), %rdx
+	movq 32(%rsp), %rdi
+	addq $48, %rsp
+	cmpq $0, %rsi
+	jz label1187
 	movq $1, %rax
-	jmp label1183
-label1182:
+	jmp label1188
+label1187:
 	movq $0, %rax
-label1183:
+label1188:
 	movq %rax, %rdi
 	call assertion
-label1181:
+label1186:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

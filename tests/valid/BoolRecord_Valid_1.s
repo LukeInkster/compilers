@@ -13,8 +13,9 @@ wl_main:
 	movq %rax, 0(%rsp)
 	movq -8(%rbp), %rax
 	movq %rax, 8(%rsp)
-	movq 0(%rsp), %rax
+	movq %rsp, %rax
 	addq $16, %rsp
+	movq 0(%rax), %rax
 	movq $1, %rbx
 	cmpq %rax, %rbx
 	jnz label161
@@ -30,8 +31,9 @@ label162:
 	movq %rax, 0(%rsp)
 	movq -8(%rbp), %rax
 	movq %rax, 8(%rsp)
-	movq 8(%rsp), %rax
+	movq %rsp, %rax
 	addq $16, %rsp
+	movq 8(%rax), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
 	jnz label163
@@ -74,8 +76,9 @@ label166:
 	movq %rax, 0(%rsp)
 	movq -8(%rbp), %rax
 	movq %rax, 8(%rsp)
-	movq 0(%rsp), %rax
+	movq %rsp, %rax
 	addq $16, %rsp
+	movq 0(%rax), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
 	jnz label167
@@ -91,8 +94,9 @@ label168:
 	movq %rax, 0(%rsp)
 	movq -8(%rbp), %rax
 	movq %rax, 8(%rsp)
-	movq 8(%rsp), %rax
+	movq %rsp, %rax
 	addq $16, %rsp
+	movq 8(%rax), %rax
 	movq $0, %rbx
 	cmpq %rax, %rbx
 	jnz label169

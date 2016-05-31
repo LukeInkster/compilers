@@ -61,22 +61,28 @@ wl_f:
 	movq 24(%rsp), %rdx
 	addq $32, %rsp
 	movq %rdx, %rbx
-	movq 0(%rax), %rcx
-	incq %rcx
-	subq $32, %rsp
+	movq %rax, %rcx
+	movq %rbx, %rdx
+	movq 0(%rcx), %rdi
+	incq %rdi
+	subq $48, %rsp
 	movq %rax, 0(%rsp)
 	movq %rbx, 8(%rsp)
 	movq %rcx, 16(%rsp)
-	movq %rax, %rdi
-	movq %rbx, %rsi
+	movq %rdx, 24(%rsp)
+	movq %rdi, 32(%rsp)
+	xchgq %rcx, %rdi
+	movq %rdx, %rsi
 	movq %rcx, %rdx
 	call intncmp
-	movq %rax, %rdx
+	movq %rax, %rsi
 	movq 0(%rsp), %rax
 	movq 8(%rsp), %rbx
 	movq 16(%rsp), %rcx
-	addq $32, %rsp
-	cmpq $0, %rdx
+	movq 24(%rsp), %rdx
+	movq 32(%rsp), %rdi
+	addq $48, %rsp
+	cmpq $0, %rsi
 	jz label42
 	leaq str0(%rip), %rax
 	movq %rax, 16(%rbp)

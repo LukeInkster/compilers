@@ -5,14 +5,14 @@ wl_f:
 	movq %rsp, %rbp
 	movq $3, %rax
 	movq %rax, 24(%rbp)
-label1136:
+label1141:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
 wl_main:
 	pushq %rbp
 	movq %rsp, %rbp
-label1137:
+label1142:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

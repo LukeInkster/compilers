@@ -5,7 +5,7 @@ wl_f:
 	movq %rsp, %rbp
 	movq $3, %rax
 	movq %rax, 24(%rbp)
-label1170:
+label1175:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -24,7 +24,7 @@ wl_main:
 	movq %rax, 8(%rsp)
 	call wl_f
 	addq $16, %rsp
-label1171:
+label1176:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

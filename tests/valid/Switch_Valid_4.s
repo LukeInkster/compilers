@@ -30,26 +30,91 @@ wl_f:
 	movq 16(%rsp), %rcx
 	addq $32, %rsp
 	movq %rcx, %rax
-	cmpq %rax, %rbx
-	jnz label912
-label910:
-	movq $0, %rbx
-	movq %rbx, 16(%rbp)
-	jmp label908
-	jmp label911
-label912:
-	cmpq %rax, %rbx
-	jnz label914
-label911:
-	movq $-1, %rbx
-	movq %rbx, 16(%rbp)
-	jmp label908
+	movq $8, %rbx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, %rdi
+	call malloc
+	movq %rax, %rbx
+	movq 0(%rsp), %rax
+	addq $16, %rsp
+	movq $0, %rcx
+	movq %rcx, 0(%rbx)
+	movq %rax, %rcx
+	movq %rbx, %rdx
+	movq 0(%rcx), %rdi
+	incq %rdi
+	subq $48, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rdx, 24(%rsp)
+	movq %rdi, 32(%rsp)
+	xchgq %rcx, %rdi
+	movq %rdx, %rsi
+	movq %rcx, %rdx
+	call intncmp
+	movq %rax, %rsi
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	movq 24(%rsp), %rdx
+	movq 32(%rsp), %rdi
+	addq $48, %rsp
+	cmpq $0, %rsi
+	jz label917
+label915:
+	movq $0, %rcx
+	movq %rcx, 16(%rbp)
+	jmp label913
+	jmp label916
+label917:
+	movq $16, %rcx
+	subq $16, %rsp
+	movq %rax, 0(%rsp)
+	movq %rcx, %rdi
+	call malloc
+	movq %rax, %rcx
+	movq 0(%rsp), %rax
+	addq $16, %rsp
+	movq %rcx, %rbx
+	movq $1, %rdx
+	movq %rdx, 0(%rcx)
+	movq $1, %rdx
+	movq %rdx, 8(%rcx)
+	movq %rax, %rcx
+	movq %rbx, %rdx
+	movq 0(%rcx), %rdi
+	incq %rdi
+	subq $48, %rsp
+	movq %rax, 0(%rsp)
+	movq %rbx, 8(%rsp)
+	movq %rcx, 16(%rsp)
+	movq %rdx, 24(%rsp)
+	movq %rdi, 32(%rsp)
+	xchgq %rcx, %rdi
+	movq %rdx, %rsi
+	movq %rcx, %rdx
+	call intncmp
+	movq %rax, %rsi
+	movq 0(%rsp), %rax
+	movq 8(%rsp), %rbx
+	movq 16(%rsp), %rcx
+	movq 24(%rsp), %rdx
+	movq 32(%rsp), %rdi
+	addq $48, %rsp
+	cmpq $0, %rsi
+	jz label919
+label916:
+	movq $-1, %rcx
+	movq %rcx, 16(%rbp)
+	jmp label913
+label919:
 label914:
-label909:
 	movq $10, %rax
 	movq %rax, 16(%rbp)
-	jmp label908
-label908:
+	jmp label913
+label913:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -77,12 +142,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label917
+	jnz label922
 	movq $1, %rax
-	jmp label918
-label917:
+	jmp label923
+label922:
 	movq $0, %rax
-label918:
+label923:
 	movq %rax, %rdi
 	call assertion
 	movq $-1, %rax
@@ -108,12 +173,12 @@ label918:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label919
+	jnz label924
 	movq $1, %rax
-	jmp label920
-label919:
+	jmp label925
+label924:
 	movq $0, %rax
-label920:
+label925:
 	movq %rax, %rdi
 	call assertion
 	movq $10, %rax
@@ -139,12 +204,12 @@ label920:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label921
+	jnz label926
 	movq $1, %rax
-	jmp label922
-label921:
+	jmp label927
+label926:
 	movq $0, %rax
-label922:
+label927:
 	movq %rax, %rdi
 	call assertion
 	movq $10, %rax
@@ -174,15 +239,15 @@ label922:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label923
+	jnz label928
 	movq $1, %rax
-	jmp label924
-label923:
+	jmp label929
+label928:
 	movq $0, %rax
-label924:
+label929:
 	movq %rax, %rdi
 	call assertion
-label916:
+label921:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

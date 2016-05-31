@@ -34,11 +34,11 @@ wl_trim:
 	movq 8(%rsp), %rbx
 	movq 16(%rsp), %rcx
 	addq $32, %rsp
-label1049:
+label1054:
 	movq -16(%rbp), %rax
 	movq 24(%rbp), %rbx
 	cmpq %rbx, %rax
-	jge label1050
+	jge label1055
 	movq -8(%rbp), %rax
 	movq 0(%rax), %rbx
 	incq %rbx
@@ -110,8 +110,8 @@ label1049:
 	movq $1, %rbx
 	addq %rbx, %rax
 	movq %rax, -16(%rbp)
-	jmp label1049
-label1050:
+	jmp label1054
+label1055:
 	movq -8(%rbp), %rax
 	movq 0(%rax), %rbx
 	incq %rbx
@@ -139,8 +139,8 @@ label1050:
 	movq 16(%rsp), %rcx
 	addq $32, %rsp
 	movq %rcx, 16(%rbp)
-	jmp label1048
-label1048:
+	jmp label1053
+label1053:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -225,31 +225,37 @@ wl_main:
 	movq %rcx, 24(%rbx)
 	movq $2, %rcx
 	movq %rcx, 32(%rbx)
-	movq 0(%rax), %rcx
-	incq %rcx
-	subq $32, %rsp
+	movq %rax, %rcx
+	movq %rbx, %rdx
+	movq 0(%rcx), %rdi
+	incq %rdi
+	subq $48, %rsp
 	movq %rax, 0(%rsp)
 	movq %rbx, 8(%rsp)
 	movq %rcx, 16(%rsp)
-	movq %rax, %rdi
-	movq %rbx, %rsi
+	movq %rdx, 24(%rsp)
+	movq %rdi, 32(%rsp)
+	xchgq %rcx, %rdi
+	movq %rdx, %rsi
 	movq %rcx, %rdx
 	call intncmp
-	movq %rax, %rdx
+	movq %rax, %rsi
 	movq 0(%rsp), %rax
 	movq 8(%rsp), %rbx
 	movq 16(%rsp), %rcx
-	addq $32, %rsp
-	cmpq $0, %rdx
-	jz label1052
+	movq 24(%rsp), %rdx
+	movq 32(%rsp), %rdi
+	addq $48, %rsp
+	cmpq $0, %rsi
+	jz label1057
 	movq $1, %rax
-	jmp label1053
-label1052:
+	jmp label1058
+label1057:
 	movq $0, %rax
-label1053:
+label1058:
 	movq %rax, %rdi
 	call assertion
-label1051:
+label1056:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

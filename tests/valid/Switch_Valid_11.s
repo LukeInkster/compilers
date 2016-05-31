@@ -6,35 +6,35 @@ wl_f:
 	movq 24(%rbp), %rax
 	leaq str0(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label622
-label620:
-	movq $0, %rbx
-	movq %rbx, 16(%rbp)
-	jmp label618
-	jmp label621
-label622:
+	jnz label627
+label625:
+	movq $0, %rcx
+	movq %rcx, 16(%rbp)
+	jmp label623
+	jmp label626
+label627:
 	leaq str1(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label624
-label621:
-	movq $1, %rbx
-	movq %rbx, 16(%rbp)
-	jmp label618
+	jnz label629
+label626:
+	movq $1, %rcx
+	movq %rcx, 16(%rbp)
 	jmp label623
-label624:
+	jmp label628
+label629:
 	leaq str2(%rip), %rbx
 	cmpq %rax, %rbx
-	jnz label626
-label623:
-	movq $2, %rbx
-	movq %rbx, 16(%rbp)
-	jmp label618
-label626:
-label619:
+	jnz label631
+label628:
+	movq $2, %rcx
+	movq %rcx, 16(%rbp)
+	jmp label623
+label631:
+label624:
 	movq $-1, %rax
 	movq %rax, 16(%rbp)
-	jmp label618
-label618:
+	jmp label623
+label623:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -53,12 +53,12 @@ wl_main:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label629
+	jnz label634
 	movq $1, %rax
-	jmp label630
-label629:
+	jmp label635
+label634:
 	movq $0, %rax
-label630:
+label635:
 	movq %rax, %rdi
 	call assertion
 	movq $1, %rax
@@ -73,12 +73,12 @@ label630:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label631
+	jnz label636
 	movq $1, %rax
-	jmp label632
-label631:
+	jmp label637
+label636:
 	movq $0, %rax
-label632:
+label637:
 	movq %rax, %rdi
 	call assertion
 	movq $2, %rax
@@ -93,12 +93,12 @@ label632:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label633
+	jnz label638
 	movq $1, %rax
-	jmp label634
-label633:
+	jmp label639
+label638:
 	movq $0, %rax
-label634:
+label639:
 	movq %rax, %rdi
 	call assertion
 	movq $-1, %rax
@@ -113,15 +113,15 @@ label634:
 	addq $16, %rsp
 	movq -32(%rsp), %rbx
 	cmpq %rax, %rbx
-	jnz label635
+	jnz label640
 	movq $1, %rax
-	jmp label636
-label635:
+	jmp label641
+label640:
 	movq $0, %rax
-label636:
+label641:
 	movq %rax, %rdi
 	call assertion
-label628:
+label633:
 	movq %rbp, %rsp
 	popq %rbp
 	ret

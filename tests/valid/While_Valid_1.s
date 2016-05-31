@@ -62,11 +62,11 @@ wl_reverse:
 	movq 16(%rsp), %rcx
 	addq $32, %rsp
 	movq %rcx, -8(%rbp)
-label638:
+label643:
 	movq -16(%rbp), %rax
 	movq $0, %rbx
 	cmpq %rbx, %rax
-	jle label639
+	jle label644
 	movq -16(%rbp), %rax
 	movq $1, %rbx
 	subq %rbx, %rax
@@ -142,8 +142,8 @@ label638:
 	movq $1, %rbx
 	addq %rbx, %rax
 	movq %rax, -24(%rbp)
-	jmp label638
-label639:
+	jmp label643
+label644:
 	movq -8(%rbp), %rax
 	movq 0(%rax), %rbx
 	incq %rbx
@@ -171,8 +171,8 @@ label639:
 	movq 16(%rsp), %rcx
 	addq $32, %rsp
 	movq %rcx, 16(%rbp)
-	jmp label637
-label637:
+	jmp label642
+label642:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
@@ -220,31 +220,37 @@ wl_main:
 	movq %rcx, 32(%rbx)
 	movq $1, %rcx
 	movq %rcx, 40(%rbx)
-	movq 0(%rax), %rcx
-	incq %rcx
-	subq $32, %rsp
+	movq %rax, %rcx
+	movq %rbx, %rdx
+	movq 0(%rcx), %rdi
+	incq %rdi
+	subq $48, %rsp
 	movq %rax, 0(%rsp)
 	movq %rbx, 8(%rsp)
 	movq %rcx, 16(%rsp)
-	movq %rax, %rdi
-	movq %rbx, %rsi
+	movq %rdx, 24(%rsp)
+	movq %rdi, 32(%rsp)
+	xchgq %rcx, %rdi
+	movq %rdx, %rsi
 	movq %rcx, %rdx
 	call intncmp
-	movq %rax, %rdx
+	movq %rax, %rsi
 	movq 0(%rsp), %rax
 	movq 8(%rsp), %rbx
 	movq 16(%rsp), %rcx
-	addq $32, %rsp
-	cmpq $0, %rdx
-	jz label641
+	movq 24(%rsp), %rdx
+	movq 32(%rsp), %rdi
+	addq $48, %rsp
+	cmpq $0, %rsi
+	jz label646
 	movq $1, %rax
-	jmp label642
-label641:
+	jmp label647
+label646:
 	movq $0, %rax
-label642:
+label647:
 	movq %rax, %rdi
 	call assertion
-label640:
+label645:
 	movq %rbp, %rsp
 	popq %rbp
 	ret
